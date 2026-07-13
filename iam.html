@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Inter & Pretendard for sleek Korean typography -->
-    <link rel="stylesheet" as="style" crossorigin href="https://cdn.tailwindcss.com/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
     
     <script>
         tailwind.config = {
@@ -17,18 +17,22 @@
                         sans: ['Pretendard', 'Inter', 'sans-serif'],
                     },
                     colors: {
-                        darkBg: '#09090b', // Zinc 950 deep dark
-                        playBg: '#0e0204', // Deep wine black for Passion ON mode
-                        cardBg: '#18181b', // Zinc 900
-                        cardBorder: '#27272a', // Zinc 800
-                        // Royal Blue for Work
-                        accentWork: '#3b52ee', // Highly readable royal blue
-                        accentWorkDark: '#111E6C', // Deep premium royal blue
-                        accentPlay: '#f43f5e', // Rose/Neon pink for Play
+                        // Dynamic Theme Token Connections
+                        customBg: 'var(--bg-color)',
+                        customText: 'var(--text-color)',
+                        customCardBg: 'var(--card-bg)',
+                        customCardBorder: 'var(--card-border)',
+                        customTextMuted: 'var(--text-muted)',
+                        
+                        // Premium Royal Blue for Work
+                        accentWork: '#3b52ee', 
+                        accentWorkDark: '#111E6C', 
+                        // Premium Ruby Red for Play
+                        accentPlay: '#900603', 
                     },
                     boxShadow: {
-                        'glow-work': '0 0 30px rgba(17, 30, 108, 0.4)', 
-                        'glow-play': '0 0 35px rgba(244, 63, 94, 0.3)',
+                        'glow-work': '0 0 35px rgba(59, 82, 238, 0.15)', 
+                        'glow-play': '0 0 35px rgba(144, 6, 3, 0.25)',
                     }
                 }
             }
@@ -36,16 +40,55 @@
     </script>
 
     <style>
-        body {
-            background-color: #09090b;
-            color: #f4f4f5;
-            overflow-x: hidden;
-            font-family: 'Pretendard', 'Inter', sans-serif;
-            transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        /* CSS variables to eleganty handle Dark/Light + OFF/ON combinations */
+        :root {
+            --bg-color: #09090b;       /* Dark Mode + OFF (Default) */
+            --text-color: #f4f4f5;
+            --card-bg: #18181b;
+            --card-bg-translucent: rgba(24, 24, 27, 0.4); /* Perfect dark translucent */
+            --card-border: #27272a;
+            --text-muted: #a1a1aa;
+            --header-bg: rgba(9, 9, 11, 0.6);
+            --header-border: rgba(39, 39, 42, 0.6);
+            --icon-bg: #27272a;
+            --icon-text: #a1a1aa;
+            --badge-text: #71717a;
         }
 
         body.switch-on {
-            background-color: #0e0204;
+            --bg-color: #0e0204;       /* Dark Mode + ON */
+            --icon-bg: rgba(144, 6, 3, 0.15);
+            --icon-text: #900603;
+            --badge-text: #900603;
+        }
+
+        body.light-mode {
+            --bg-color: #f4f4f5;       /* Light Mode + OFF */
+            --text-color: #09090b;
+            --card-bg: #ffffff;
+            --card-bg-translucent: rgba(255, 255, 255, 0.6); /* Highly readable light translucent background */
+            --card-border: #e4e4e7;
+            --text-muted: #71717a;
+            --header-bg: rgba(244, 244, 245, 0.6);
+            --header-border: rgba(228, 228, 231, 0.6);
+            --icon-bg: #e4e4e7;
+            --icon-text: #71717a;
+            --badge-text: #71717a;
+        }
+
+        body.light-mode.switch-on {
+            --bg-color: #fff5f5;       /* Light Mode + ON (Extremely soft Ruby/Pink Hue for readability) */
+            --icon-bg: rgba(144, 6, 3, 0.1);
+            --icon-text: #900603;
+            --badge-text: #900603;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1), color 0.5s ease;
         }
 
         /* Custom scrollbar for premium chic look */
@@ -53,14 +96,11 @@
             width: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #09090b;
+            background: var(--bg-color);
         }
         ::-webkit-scrollbar-thumb {
-            background: #27272a;
+            background: var(--card-border);
             border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
         }
 
         /* Interactive Custom Mouse Spotlight */
@@ -80,14 +120,42 @@
             transition: background 0.4s ease;
         }
 
-        /* Ambient glows for the Switch state (Play Mode) */
+        /* Ambient glows for the Switch state (Play Mode) with Ruby Red */
         .switch-on .spotlight {
             background: radial-gradient(
                 700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                rgba(244, 63, 94, 0.09), 
+                rgba(144, 6, 3, 0.09), 
                 rgba(17, 30, 108, 0.01) 40%,
                 transparent 80%
             );
+        }
+
+        /* Light-mode adjustments for spotlights */
+        .light-mode .spotlight {
+            background: radial-gradient(
+                600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(59, 82, 238, 0.04), 
+                transparent 80%
+            );
+        }
+        .light-mode.switch-on .spotlight {
+            background: radial-gradient(
+                700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(144, 6, 3, 0.05), 
+                transparent 80%
+            );
+        }
+
+        /* Ambient glows adjustment for Light Mode to prevent dark smudges */
+        body.light-mode .ambient-top-glow {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            filter: blur(80px);
+        }
+        body.light-mode #hero-glow {
+            background-color: rgba(59, 82, 238, 0.04) !important; /* Extremely subtle clear royal blue instead of navy blob */
+        }
+        body.light-mode.switch-on #hero-glow {
+            background-color: rgba(144, 6, 3, 0.03) !important; /* Extremely subtle clear ruby red instead of navy blob */
         }
 
         /* Smooth state transitions */
@@ -125,12 +193,13 @@
     <!-- Interactive Spotlight Overlay -->
     <div class="spotlight" id="spotlight"></div>
 
-    <header class="fixed top-0 left-0 w-full z-40 backdrop-blur-md bg-darkBg/60 border-b border-zinc-900/60 transition-all duration-300">
+    <!-- Minimal Header -->
+    <header class="fixed top-0 left-0 w-full z-40 backdrop-blur-md transition-all duration-300" style="background-color: var(--header-bg); border-bottom: 1px solid var(--header-border);">
         <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
             <!-- Logo / Signature -->
             <a href="#" class="flex items-center space-x-2 group">
                 <div class="w-3 h-3 rounded-full bg-zinc-600 group-hover:bg-accentWork transition-colors duration-300 logo-dot"></div>
-                <span class="font-semibold tracking-tight text-zinc-200 group-hover:text-white transition-colors">JAEWON CHUNG</span>
+                <span class="font-semibold tracking-tight transition-colors" style="color: var(--text-color);">JAEWON CHUNG</span>
             </a>
 
             <!-- Mode Quick Indicators for Desktop -->
@@ -140,43 +209,59 @@
                 <span id="nav-play-label" class="transition-colors duration-300">PLAY : PASSIONATE EXPLORER</span>
             </div>
 
-            <!-- Global Mini Switch (Sticky Header Toggle) -->
-            <div class="flex items-center space-x-3">
-                <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider hidden sm:inline">Press <kbd class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[9px]">S</kbd></span>
-                <button id="global-toggle" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none bg-zinc-800" role="switch" aria-checked="false">
-                    <span class="sr-only">Toggle mood</span>
-                    <span id="global-toggle-thumb" aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-zinc-400 shadow ring-0 transition duration-300 ease-in-out translate-x-0"></span>
+            <!-- Header Interaction Panel -->
+            <div class="flex items-center space-x-4">
+                <!-- Theme Toggle Button (Light/Dark) -->
+                <button id="theme-toggle" class="p-2 rounded-lg transition-colors duration-200" style="background-color: var(--card-bg); border: 1px solid var(--card-border); color: var(--text-color);" aria-label="Toggle light and dark mode">
+                    <!-- Sun Icon (appears in light mode) -->
+                    <svg id="theme-icon-sun" class="w-4 h-4 text-zinc-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707m0-12.728l.707.707m12.728 12.728l.707-.707M12 8a4 4 0 100 8 4 4 0 000-8z"></path>
+                    </svg>
+                    <!-- Moon Icon (appears in dark mode) -->
+                    <svg id="theme-icon-moon" class="w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                    </svg>
                 </button>
+
+                <!-- Global Mini Switch (Sticky Header Toggle) -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-[10px] font-mono uppercase tracking-wider hidden sm:inline" style="color: var(--text-muted);">Press <kbd class="px-1.5 py-0.5 border rounded text-[9px]" style="background-color: var(--card-bg); border-color: var(--card-border);">S</kbd></span>
+                    <button id="global-toggle" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none bg-zinc-800" role="switch" aria-checked="false">
+                        <span class="sr-only">Toggle mood</span>
+                        <span id="global-toggle-thumb" aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-zinc-400 shadow ring-0 transition duration-300 ease-in-out translate-x-0"></span>
+                    </button>
+                </div>
             </div>
         </div>
     </header>
 
+    <!-- Hero / Intro Section -->
     <section class="relative min-h-screen flex flex-col justify-center items-center px-6 pt-24 pb-16 overflow-hidden">
         <!-- Ambient background glows -->
-        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-zinc-900/40 blur-[100px] pointer-events-none z-0"></div>
+        <div class="ambient-top-glow absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-zinc-900/10 dark:bg-zinc-900/40 blur-[100px] pointer-events-none z-0"></div>
         <div id="hero-glow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accentWorkDark/20 blur-[140px] pointer-events-none z-0 transition-all duration-700"></div>
 
         <div class="max-w-3xl w-full text-center z-10 space-y-8">
             <!-- SSAFY Tag -->
-            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-400">
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border text-xs" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">
                 <span class="w-1.5 h-1.5 rounded-full bg-accentWork pulse-glow" id="ssafy-pulse-dot"></span>
                 <span>SSAFY 16기</span>
             </div>
 
             <!-- Main Intro Greeting -->
             <div class="space-y-4">
-                <p id="hero-greeting" class="text-sm md:text-base font-mono text-zinc-400 tracking-wider transition-all duration-500">
+                <p id="hero-greeting" class="text-sm md:text-base font-mono tracking-wider transition-all duration-500" style="color: var(--text-muted);">
                     반갑습니다, 차분하게 생각하고 기록하는
                 </p>
-                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight leading-tight" style="color: var(--text-color);">
                     정재원입니다.
                 </h1>
             </div>
 
             <!-- Catchphrase block -->
-            <div class="p-6 md:p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-sm max-w-2xl mx-auto relative overflow-hidden group">
+            <div class="p-6 md:p-8 rounded-2xl backdrop-blur-sm max-w-2xl mx-auto relative overflow-hidden group border transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="absolute top-0 left-0 w-1 h-full bg-accentWorkDark transition-all duration-500" id="catchphrase-border"></div>
-                <p class="text-zinc-300 md:text-lg leading-relaxed text-left font-light pl-2">
+                <p class="md:text-lg leading-relaxed text-left font-light pl-2" style="color: var(--text-color);">
                     "좋아하는 것 앞에서 <span id="catch-switch-text" class="text-zinc-400 font-semibold transition-all duration-300">스위치</span>가 켜지는,<br class="hidden sm:inline">
                     거창한 포장 없이 나만의 즐거움을 수집하는 기록 보관소."
                 </p>
@@ -184,13 +269,13 @@
 
             <!-- Interactive Core Switch Module -->
             <div class="pt-6 pb-2 space-y-4 max-w-sm mx-auto">
-                <div class="flex items-center justify-center space-x-6 bg-zinc-900/90 border border-zinc-800 p-4 rounded-2xl shadow-xl">
+                <div class="flex items-center justify-center space-x-6 border p-4 rounded-2xl shadow-xl transition-all duration-500" style="background-color: var(--card-bg); border-color: var(--card-border);">
                     <span id="switch-off-label" class="text-sm font-semibold transition-all duration-300 text-accentWork scale-105">
                         OFF <span class="text-xs block font-light text-zinc-500">Calm Dev</span>
                     </span>
                     
                     <!-- Main Master Toggle -->
-                    <button id="master-switch" class="relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-4 border-zinc-800 bg-zinc-950 transition-colors duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-zinc-700" role="switch" aria-checked="false">
+                    <button id="master-switch" class="relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-4 transition-colors duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-zinc-700" style="background-color: var(--bg-color); border-color: var(--card-border);" role="switch" aria-checked="false">
                         <span id="master-switch-thumb" class="pointer-events-none block h-8 w-8 transform rounded-full bg-zinc-600 shadow-md ring-0 transition-all duration-500 ease-in-out translate-x-0 flex items-center justify-center">
                             <svg class="w-4 h-4 text-zinc-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         </span>
@@ -200,7 +285,7 @@
                         ON <span class="text-xs block font-light text-zinc-500">Focused</span>
                     </span>
                 </div>
-                <p id="toggle-instruction" class="text-[11px] text-zinc-500 italic">스위치 혹은 키보드 <kbd class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 rounded font-mono text-[9px] text-zinc-400">S</kbd> 키를 눌러 면모를 반전해 보세요.</p>
+                <p id="toggle-instruction" class="text-[11px] text-zinc-500 italic">스위치 혹은 키보드 <kbd class="px-1.5 py-0.5 border rounded font-mono text-[9px]">S</kbd> 키를 눌러 면모를 반전해 보세요.</p>
             </div>
         </div>
 
@@ -211,63 +296,65 @@
         </div>
     </section>
 
-    <section class="max-w-5xl mx-auto px-6 py-20 border-t border-zinc-900 relative">
+    <!-- Core Strengths / Identity Section -->
+    <section class="max-w-5xl mx-auto px-6 py-20 border-t relative" style="border-color: var(--card-border);">
         <div class="text-center md:text-left mb-12 space-y-2">
             <h2 class="text-xs font-mono uppercase tracking-widest text-zinc-500 animate-pulse">Identity & Strength</h2>
-            <p class="text-2xl md:text-3xl font-bold text-white">애쓰지 않는 정재원의 세 가지 매력</p>
+            <p class="text-2xl md:text-3xl font-bold" style="color: var(--text-color);">애쓰지 않는 정재원의 세 가지 매력</p>
         </div>
 
         <!-- Strengths Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Strength 1: 몰입력 -->
-            <div id="strength-card-1" class="mode-transition p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between space-y-6 hover:border-zinc-700 hover:bg-zinc-900/80">
+            <!-- Strength 1 -->
+            <div id="strength-card-1" class="mode-transition p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="space-y-4">
-                    <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center transition-all duration-500 icon-box text-zinc-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--icon-text);">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-zinc-200 transition-colors duration-300 strength-title">스위치가 켜지는 몰입력</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed font-light">
-                        평소에는 조용하고 신중하지만 마음을 끄는 주제가 던져지면 에너지가 치솟습니다. 복잡한 시스템 내부 최적화나 설계 구조 분석 등 깊이 있는 탐구에 즉각 몰입합니다.
+                    <h3 class="text-lg font-bold transition-colors duration-300 strength-title" style="color: var(--text-color);">신중하게 쌓는 아키텍처</h3>
+                    <p class="text-sm leading-relaxed font-light strength-desc" style="color: var(--text-muted);">
+                        성급하게 타이핑을 시작하기 전에 문제의 범주를 명확히 정의합니다. 논리적 인과관계를 차분히 뜯어보며, 장기적으로 안정된 코드 구조를 구축하는 것에 우선순위를 둡니다.
                     </p>
                 </div>
-                <div class="text-xs font-mono text-zinc-600 transition-colors duration-300 strength-badge">#Passion_On</div>
+                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--badge-text);">#Calm_Logic</div>
             </div>
 
-            <!-- Strength 2: 취향의 밸런스 -->
-            <div id="strength-card-2" class="mode-transition p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between space-y-6 hover:border-zinc-700 hover:bg-zinc-900/80">
+            <!-- Strength 2 -->
+            <div id="strength-card-2" class="mode-transition p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="space-y-4">
-                    <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center transition-all duration-500 icon-box text-zinc-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--icon-text);">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-zinc-200 transition-colors duration-300 strength-title">취향의 밸런스</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed font-light">
-                        코트 위에서 땀 흘리며 템포를 지배하는 다이내믹한 테니스부터, 감각적인 비트 사운드로 가만히 집중을 조력하는 장비 수집까지, 정적이고 동적인 취향을 조화롭게 이룹니다.
+                    <h3 class="text-lg font-bold transition-colors duration-300 strength-title" style="color: var(--text-color);">안정적인 학습 템포</h3>
+                    <p class="text-sm leading-relaxed font-light strength-desc" style="color: var(--text-muted);">
+                        단기적인 성과에 쉽게 일희일비하지 않고, 매일 조금씩 지식을 쌓아 올려 견고한 결과물을 만들어 냅니다. 꾸준함이 지닌 힘을 믿으며 일정한 속도로 흔들림 없이 전진합니다.
                     </p>
                 </div>
-                <div class="text-xs font-mono text-zinc-600 transition-colors duration-300 strength-badge">#Work_Play_Balance</div>
+                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--badge-text);">#Daily_Stable</div>
             </div>
 
-            <!-- Strength 3: 담백한 진정성 -->
-            <div id="strength-card-3" class="mode-transition p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between space-y-6 hover:border-zinc-700 hover:bg-zinc-900/80">
+            <!-- Strength 3 -->
+            <div id="strength-card-3" class="mode-transition p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="space-y-4">
-                    <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center transition-all duration-500 icon-box text-zinc-400">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--icon-text);">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-zinc-200 transition-colors duration-300 strength-title">애쓰지 않는 담백함</h3>
-                    <p class="text-zinc-400 text-sm leading-relaxed font-light">
-                        과장되거나 억지스럽게 포장된 이력서 대신, 스스로 경험하고 가치를 느낀 본질 그대로만을 심플하게 정제하여 공유하는 편안하고 무해한 소통을 중요시합니다.
+                    <h3 class="text-lg font-bold transition-colors duration-300 strength-title" style="color: var(--text-color);">정제되고 투명한 기록</h3>
+                    <p class="text-sm leading-relaxed font-light strength-desc" style="color: var(--text-muted);">
+                        가공되거나 부풀려진 요약 정보보다는, 설계 당시 고민했던 트레이드오프나 해결 과정의 시행착오를 담백하고 솔직하게 글로 남겨 동료들에게 무해한 통찰력을 제공합니다.
                     </p>
                 </div>
-                <div class="text-xs font-mono text-zinc-600 transition-colors duration-300 strength-badge">#Honest_Chic</div>
+                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--badge-text);">#Pure_Archive</div>
             </div>
         </div>
     </section>
 
+    <!-- Interactive Widgets Section -->
     <section class="max-w-5xl mx-auto px-6 pb-20 relative">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             
             <!-- CURRENT VIBE PLAYER (Interactive Music Player Mockup) -->
-            <div id="vibe-widget" class="mode-transition p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800 flex flex-col justify-between space-y-6">
+            <div id="vibe-widget" class="mode-transition p-6 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] font-mono tracking-widest text-zinc-500">CURRENT VIBE</span>
                     <!-- Equalizer Container -->
@@ -282,19 +369,19 @@
 
                 <div class="flex items-center space-x-4">
                     <!-- Album Cover Mockup -->
-                    <div id="album-cover" class="w-16 h-16 rounded-lg bg-zinc-800 border border-zinc-700/50 flex items-center justify-center transition-all duration-500 relative overflow-hidden shrink-0">
+                    <div id="album-cover" class="w-16 h-16 rounded-lg border flex items-center justify-center transition-all duration-500 relative overflow-hidden shrink-0" style="background-color: var(--card-border); border-color: rgba(0,0,0,0.1);">
                         <div class="absolute inset-2 rounded-full border border-zinc-700/80 flex items-center justify-center animate-spin" style="animation-duration: 8s;">
                             <div class="w-3 h-3 rounded-full bg-zinc-950"></div>
                         </div>
                     </div>
                     <div class="space-y-1">
-                        <h4 id="vibe-title" class="text-sm font-semibold text-zinc-200 transition-colors duration-300">Coffee & Coding Beats</h4>
+                        <h4 id="vibe-title" class="text-sm font-semibold transition-colors duration-300" style="color: var(--text-color);">Coffee & Coding Beats</h4>
                         <p id="vibe-sub" class="text-xs text-zinc-500 font-mono transition-colors duration-300">Quiet Lo-fi Session (65 BPM)</p>
                     </div>
                 </div>
 
                 <div class="space-y-1.5">
-                    <div class="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-1 rounded-full overflow-hidden" style="background-color: var(--card-border);">
                         <div id="player-progress" class="h-full bg-accentWork transition-all duration-700" style="width: 35%;"></div>
                     </div>
                     <div class="flex justify-between text-[9px] font-mono text-zinc-600">
@@ -305,37 +392,37 @@
             </div>
 
             <!-- DYNAMIC SPEC METER (Interactive Radar-like Specs) -->
-            <div id="specs-widget" class="mode-transition p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800 flex flex-col justify-between space-y-4">
+            <div id="specs-widget" class="mode-transition p-6 rounded-2xl border flex flex-col justify-between space-y-4 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <span class="text-[10px] font-mono tracking-widest text-zinc-500">SESSION METERS</span>
                 
                 <div class="space-y-4" id="meter-bars-container">
                     <!-- Stat 1 -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-mono">
-                            <span id="spec-label-1" class="text-zinc-400 transition-colors duration-300">Logic Accuracy (논리 기획력)</span>
+                            <span id="spec-label-1" class="transition-colors duration-300" style="color: var(--text-color);">Logic Accuracy (논리 설계력)</span>
                             <span id="spec-val-1" class="text-accentWork font-semibold transition-colors duration-300">95%</span>
                         </div>
-                        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div class="h-1.5 rounded-full overflow-hidden" style="background-color: var(--card-border);">
                             <div id="spec-bar-1" class="h-full bg-accentWork transition-all duration-700" style="width: 95%;"></div>
                         </div>
                     </div>
                     <!-- Stat 2 -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-mono">
-                            <span id="spec-label-2" class="text-zinc-400 transition-colors duration-300">Refactoring Focus (클린 코드 집착)</span>
+                            <span id="spec-label-2" class="transition-colors duration-300" style="color: var(--text-color);">Refactoring Focus (클린 코드 집착)</span>
                             <span id="spec-val-2" class="text-accentWork font-semibold transition-colors duration-300">90%</span>
                         </div>
-                        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div class="h-1.5 rounded-full overflow-hidden" style="background-color: var(--card-border);">
                             <div id="spec-bar-2" class="h-full bg-accentWork transition-all duration-700" style="width: 90%;"></div>
                         </div>
                     </div>
                     <!-- Stat 3 -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-mono">
-                            <span id="spec-label-3" class="text-zinc-400 transition-colors duration-300">Coffee Synergy (몰입 지속도)</span>
+                            <span id="spec-label-3" class="transition-colors duration-300" style="color: var(--text-color);">Coffee Synergy (몰입 지속도)</span>
                             <span id="spec-val-3" class="text-accentWork font-semibold transition-colors duration-300">85%</span>
                         </div>
-                        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div class="h-1.5 rounded-full overflow-hidden" style="background-color: var(--card-border);">
                             <div id="spec-bar-3" class="h-full bg-accentWork transition-all duration-700" style="width: 85%;"></div>
                         </div>
                     </div>
@@ -345,35 +432,36 @@
         </div>
     </section>
 
-    <section class="max-w-5xl mx-auto px-6 py-20 border-t border-zinc-900 relative">
+    <!-- Two Worlds Section: Work Space vs Play Space -->
+    <section class="max-w-5xl mx-auto px-6 py-20 border-t relative" style="border-color: var(--card-border);">
         <div class="text-center mb-16 space-y-2">
             <h2 class="text-xs font-mono uppercase tracking-widest text-zinc-500">Dual Archives</h2>
-            <p class="text-2xl md:text-3xl font-bold text-white">정재원의 두 개의 방</p>
-            <p class="text-sm text-zinc-400 max-w-md mx-auto">기록 보관소의 서랍을 엽니다. 스위치 상태에 따라 각기 다른 조명이 켜집니다.</p>
+            <p class="text-2xl md:text-3xl font-bold" style="color: var(--text-color);">정재원의 두 개의 방</p>
+            <p class="text-sm max-w-md mx-auto" style="color: var(--text-muted);">기록 보관소의 서랍을 엽니다. 스위치 상태에 따라 각기 다른 조명이 켜집니다.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             
             <!-- LEFT COLUMN: WORK (The Developer Space) -->
-            <div id="world-work" class="mode-transition relative p-8 rounded-3xl bg-zinc-900/30 border-2 border-zinc-800 hover:border-zinc-700 flex flex-col justify-between overflow-hidden">
+            <div id="world-work" class="mode-transition relative p-8 rounded-3xl border-2 hover:border-zinc-700 flex flex-col justify-between overflow-hidden transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <!-- Status Glow Indicator -->
-                <div class="absolute top-4 right-4 flex items-center space-x-2 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
+                <div class="absolute top-4 right-4 flex items-center space-x-2 px-3 py-1 rounded-full border border-zinc-800" style="background-color: rgba(9, 9, 11, 0.8);">
                     <span id="work-indicator-dot" class="w-2 h-2 rounded-full bg-accentWork transition-colors duration-300"></span>
-                    <span id="work-indicator-text" class="text-[10px] font-mono tracking-wider text-zinc-300 transition-colors duration-300">CALM READY</span>
+                    <span id="work-indicator-text" class="text-[10px] font-mono tracking-wider transition-colors duration-300" style="color: var(--text-color);">CALM READY</span>
                 </div>
 
                 <div class="space-y-8">
                     <!-- Title -->
                     <div>
                         <span id="work-pre-title" class="text-xs font-mono text-accentWork tracking-widest block uppercase mb-1 transition-colors duration-300">01. Dev & Ssafy Life</span>
-                        <h3 class="text-xl md:text-2xl font-bold text-white">차분하게 설계하는 생각의 기록</h3>
+                        <h3 class="text-xl md:text-2xl font-bold" style="color: var(--text-color);">차분하게 설계하는 생각의 기록</h3>
                     </div>
 
                     <!-- Highlight Box -->
-                    <div id="work-highlight-box" class="p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 space-y-3 transition-colors duration-300">
+                    <div id="work-highlight-box" class="p-5 rounded-2xl border space-y-3 transition-all duration-300" style="background-color: var(--card-bg); border-color: var(--card-border);">
                         <p class="text-xs text-zinc-500 font-mono">HIGHLIGHTED WORK</p>
-                        <h4 class="text-sm font-semibold text-zinc-200">싸피(SSAFY)에서 몰입했던 프로젝트</h4>
-                        <p class="text-xs text-zinc-400 leading-relaxed font-light">
+                        <h4 class="text-sm font-semibold" style="color: var(--text-color);">싸피(SSAFY)에서 몰입했던 프로젝트</h4>
+                        <p class="text-xs leading-relaxed font-light" style="color: var(--text-muted);">
                             단순히 찍어내는 복사 코딩 대신, "왜 이 기술이 필요했는가"를 치열하게 묻고 흔적을 남깁니다. 동료들과 함께 소통하고 빌드하며 만들어가는 즐거움에 집중합니다.
                         </p>
                     </div>
@@ -382,25 +470,25 @@
                     <div class="space-y-3">
                         <p class="text-xs font-mono text-zinc-500">FAVORITE TECH / CONCEPTS</p>
                         <div class="flex flex-wrap gap-2">
-                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Modern JS</span>
-                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Algorithms</span>
-                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Responsive UI</span>
-                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Architecture</span>
-                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Vibe Coding</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg border text-xs font-mono transition-colors duration-300" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">Modern JS</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg border text-xs font-mono transition-colors duration-300" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">Algorithms</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg border text-xs font-mono transition-colors duration-300" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">Responsive UI</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg border text-xs font-mono transition-colors duration-300" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">Architecture</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg border text-xs font-mono transition-colors duration-300" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">Vibe Coding</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-8 border-t border-zinc-800/50 mt-8 flex items-center justify-between">
-                    <span id="work-foot-label" class="text-xs text-zinc-500 font-mono transition-colors duration-300">Jaewon Chung Developer Space</span>
-                    <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors duration-300" id="work-foot-dot"></span>
+                <div class="pt-8 border-t mt-8 flex items-center justify-between" style="border-color: rgba(39, 39, 42, 0.5);">
+                    <span id="work-foot-label" class="text-xs font-mono transition-colors duration-300" style="color: var(--text-muted);">Jaewon Chung Developer Space</span>
+                    <span class="w-2 h-2 rounded-full transition-colors duration-300" id="work-foot-dot" style="background-color: var(--card-border);"></span>
                 </div>
             </div>
 
             <!-- RIGHT COLUMN: PLAY (The Passionate Tastes Space) -->
-            <div id="world-play" class="mode-transition relative p-8 rounded-3xl bg-zinc-900/10 border-2 border-zinc-900/60 opacity-40 flex flex-col justify-between overflow-hidden">
+            <div id="world-play" class="mode-transition relative p-8 rounded-3xl border-2 opacity-40 flex flex-col justify-between overflow-hidden transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <!-- Status Glow Indicator -->
-                <div class="absolute top-4 right-4 flex items-center space-x-2 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
+                <div class="absolute top-4 right-4 flex items-center space-x-2 px-3 py-1 rounded-full border border-zinc-800" style="background-color: rgba(9, 9, 11, 0.8);">
                     <span id="play-indicator-dot" class="w-2 h-2 rounded-full bg-zinc-700 transition-all duration-300"></span>
                     <span id="play-indicator-text" class="text-[10px] font-mono tracking-wider text-zinc-500 transition-all duration-300">STANDBY</span>
                 </div>
@@ -418,7 +506,7 @@
                         
                         <!-- Mini cards for Play Room -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div class="p-4 rounded-xl bg-zinc-950/30 border border-zinc-900 transition-all duration-300 play-item-card">
+                            <div class="p-4 rounded-xl transition-all duration-300 play-item-card border" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                                 <div class="flex items-center space-x-3 mb-2">
                                     <span class="text-lg">🎾</span>
                                     <h4 class="text-xs font-bold text-zinc-400 play-item-title">ACTIVE TENNIS</h4>
@@ -427,7 +515,7 @@
                                     코트 위에서 땀 흘리는 다이내믹한 랠리. 스트로크의 묵직한 타구감과 코트 전체의 리듬과 템포에 온전하게 에너지를 몰입시킵니다.
                                 </p>
                             </div>
-                            <div class="p-4 rounded-xl bg-zinc-950/30 border border-zinc-900 transition-all duration-300 play-item-card">
+                            <div class="p-4 rounded-xl transition-all duration-300 play-item-card border" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                                 <div class="flex items-center space-x-3 mb-2">
                                     <span class="text-lg">🎧</span>
                                     <h4 class="text-xs font-bold text-zinc-400 play-item-title">MUSIC & DEV DEVICES</h4>
@@ -440,12 +528,12 @@
                     </div>
 
                     <!-- Quote -->
-                    <div class="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 italic text-xs text-zinc-500 transition-all duration-300 font-light" id="play-quote-box">
+                    <div class="p-4 rounded-xl border bg-zinc-950/10 italic text-xs text-zinc-500 transition-all duration-300 font-light" id="play-quote-box" style="border-color: var(--card-border);">
                         "진정한 몰입은 억지로 힘을 주는 순간이 아니라, 나를 복잡하게 포장하던 것들로부터 완전히 힘을 뺄 때 찾아옵니다."
                     </div>
                 </div>
 
-                <div class="pt-8 border-t border-zinc-900/50 mt-8 flex items-center justify-between">
+                <div class="pt-8 border-t mt-8 flex items-center justify-between" style="border-color: rgba(39, 39, 42, 0.5);">
                     <span class="text-xs text-zinc-600 font-mono transition-colors duration-300" id="play-foot-label">Play Room Off-line</span>
                     <span class="w-2 h-2 rounded-full bg-zinc-900 transition-colors duration-300" id="play-foot-dot"></span>
                 </div>
@@ -459,18 +547,18 @@
         <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/10 to-transparent pointer-events-none"></div>
         <div class="space-y-6 relative z-10">
             <p class="text-xs font-mono text-zinc-500 tracking-widest uppercase">OUTRO</p>
-            <h3 class="text-xl md:text-2xl font-light text-zinc-300 leading-relaxed max-w-lg mx-auto italic">
+            <h3 class="text-xl md:text-2xl font-light leading-relaxed max-w-lg mx-auto italic" style="color: var(--text-color);">
                 "기록을 읽어주셔서 감사합니다. 오늘도 각자의 스위치를 켜고 있을 당신을 응원합니다."
             </h3>
             <div class="w-8 h-[1px] bg-zinc-700 mx-auto my-6"></div>
-            <p class="text-xs text-zinc-500 tracking-wider">
+            <p class="text-xs tracking-wider" style="color: var(--text-muted);">
                 거창한 수식어 없이, 담백한 개발자 정재원의 아카이브.
             </p>
         </div>
     </section>
 
     <!-- Footer -->
-    <footer class="w-full border-t border-zinc-950 py-10 px-6 bg-zinc-950 text-zinc-600 text-xs">
+    <footer class="w-full border-t py-10 px-6 text-xs" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-muted);">
         <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
             <div>
                 <p>© 2026 Jaewon Chung. All rights reserved.</p>
@@ -487,6 +575,13 @@
         // DOM Elements
         const body = document.body;
         const spotlight = document.getElementById('spotlight');
+        
+        // Theme Elements
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIconSun = document.getElementById('theme-icon-sun');
+        const themeIconMoon = document.getElementById('theme-icon-moon');
+
+        // Switch Elements
         const masterSwitch = document.getElementById('master-switch');
         const masterSwitchThumb = document.getElementById('master-switch-thumb');
         const globalToggle = document.getElementById('global-toggle');
@@ -554,10 +649,11 @@
         const playItemTitles = document.querySelectorAll('.play-item-title');
         const playItemDescs = document.querySelectorAll('.play-item-desc');
 
-        // Track Toggle State (false = OFF / Work, true = ON / Play)
+        // State variables
         let isPlayMode = false;
+        let isLightMode = false;
 
-        // Custom Mouse Spotlight Position Tracker with custom color changes
+        // Custom Mouse Spotlight Position Tracker
         window.addEventListener('mousemove', (e) => {
             const x = e.clientX;
             const y = e.clientY;
@@ -566,92 +662,122 @@
             spotlight.style.setProperty('--mouse-y', `${y}px`);
         });
 
-        // Keydown keyboard trigger: pressing "S" or Space toggles the switch
+        // Keydown keyboard trigger: S or Space toggles the switch
         window.addEventListener('keydown', (e) => {
-            if (e.key === 's' || e.key === 'S' || e.key === ' ') {
-                // Prevent scrolling with Space
-                if (e.key === ' ') e.preventDefault();
+            if (e.key === 's' || e.key === 'S') {
                 toggleState();
             }
         });
 
-        // Toggle Logic Core Function
+        // Toggle State Functions
         function toggleState() {
             isPlayMode = !isPlayMode;
             updateUI();
         }
 
-        // Apply UI styling state according to isPlayMode value
+        function toggleTheme() {
+            isLightMode = !isLightMode;
+            if (isLightMode) {
+                body.classList.add('light-mode');
+                themeIconSun.classList.remove('hidden');
+                themeIconMoon.classList.add('hidden');
+            } else {
+                body.classList.remove('light-mode');
+                themeIconSun.classList.add('hidden');
+                themeIconMoon.classList.remove('hidden');
+            }
+            updateUI(); // Refresh state accents
+        }
+
         function updateUI() {
+            // Strength Card Content Object
+            const contents = {
+                off: {
+                    card1: {
+                        title: "신중하게 쌓는 아키텍처",
+                        desc: "성급하게 타이핑을 시작하기 전에 문제의 범주를 명확히 정의합니다. 논리적 인과관계를 차분히 뜯어보며, 장기적으로 안정된 코드 구조를 구축하는 것에 우선순위를 둡니다.",
+                        badge: "#Calm_Logic"
+                    },
+                    card2: {
+                        title: "안정적인 학습 템포",
+                        desc: "단기적인 성과에 쉽게 일희일비하지 않고, 매일 조금씩 지식을 쌓아 올려 견고한 결과물을 만들어 냅니다. 꾸준함이 지닌 힘을 믿으며 일정한 속도로 흔들림 없이 전진합니다.",
+                        badge: "#Daily_Stable"
+                    },
+                    card3: {
+                        title: "정제되고 투명한 기록",
+                        desc: "가공되거나 부풀려진 요약 정보보다는, 설계 당시 고민했던 트레이드오프나 해결 과정의 시행착오를 담백하고 솔직하게 글로 남겨 동료들에게 무해한 통찰력을 제공합니다.",
+                        badge: "#Pure_Archive"
+                    }
+                },
+                on: {
+                    card1: {
+                        title: "스위치가 켜지는 몰입력",
+                        desc: "평소에는 조용하고 신중하지만 마음을 끄는 주제가 던져지면 에너지가 치솟습니다. 복잡한 시스템 내부 최적화나 설계 구조 분석 등 깊이 있는 탐구에 즉각 몰입합니다.",
+                        badge: "#Passion_On"
+                    },
+                    card2: {
+                        title: "취향의 밸런스",
+                        desc: "코트 위에서 땀 흘리며 템포를 지배하는 다이내믹한 테니스부터, 감각적인 비트 사운드로 가만히 집중을 조력하는 장비 수집까지, 정적이고 동적인 취향을 조화롭게 이룹니다.",
+                        badge: "#Work_Play_Balance"
+                    },
+                    card3: {
+                        title: "애쓰지 않는 담백함",
+                        desc: "과장되거나 억지스럽게 포장된 이력서 대신, 스스로 경험하고 가치를 느낀 본질 그대로만을 심플하게 정제하여 공유하는 편안하고 무해한 소통을 중요시합니다.",
+                        badge: "#Honest_Chic"
+                    }
+                }
+            };
+
             if (isPlayMode) {
                 // Apply "ON" Passion Mode
                 body.classList.add('switch-on');
 
                 // Switch thumbs transform
-                masterSwitchThumb.classList.remove('translate-x-0');
-                masterSwitchThumb.classList.add('translate-x-10');
-                masterSwitchThumb.classList.remove('bg-accentWork');
-                masterSwitchThumb.classList.add('bg-accentPlay');
+                masterSwitchThumb.className = "pointer-events-none block h-8 w-8 transform rounded-full bg-accentPlay shadow-md ring-0 transition-all duration-500 ease-in-out translate-x-10 flex items-center justify-center";
                 masterSwitch.ariaChecked = "true";
 
-                globalToggleThumb.classList.remove('translate-x-0');
-                globalToggleThumb.classList.add('translate-x-5');
-                globalToggleThumb.classList.remove('bg-zinc-400');
-                globalToggleThumb.classList.add('bg-accentPlay');
+                globalToggleThumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-accentPlay shadow ring-0 transition duration-300 ease-in-out translate-x-5";
                 globalToggle.ariaChecked = "true";
 
                 // Text labels on Hero Toggle Switch
-                switchOffLabel.classList.remove('text-accentWork', 'scale-105');
-                switchOffLabel.classList.add('text-zinc-600');
-                switchOnLabel.classList.remove('text-zinc-600');
-                switchOnLabel.classList.add('text-accentPlay', 'scale-105');
+                switchOffLabel.className = "text-sm font-semibold transition-all duration-300 text-zinc-600";
+                switchOnLabel.className = "text-sm font-semibold transition-all duration-300 text-accentPlay scale-105";
 
                 // Quick Header Nav Labels
-                navWorkLabel.classList.remove('text-accentWork', 'font-semibold');
-                navWorkLabel.classList.add('text-zinc-500');
-                navPlayLabel.classList.add('text-accentPlay', 'font-semibold');
-                navPlayLabel.classList.remove('text-zinc-500');
+                navWorkLabel.className = "transition-colors duration-300 text-zinc-500";
+                navPlayLabel.className = "transition-colors duration-300 text-accentPlay font-semibold";
 
                 // Ambient Glow & Accent color changes in Hero
                 heroGreeting.innerHTML = '반갑습니다, 좋아하는 것 앞에 눈빛이 바뀌는';
-                heroGlow.classList.remove('bg-accentWorkDark/20');
-                heroGlow.classList.add('bg-accentPlay/15');
-                catchphraseBorder.classList.remove('bg-accentWorkDark');
-                catchphraseBorder.classList.add('bg-accentPlay');
-                catchSwitchText.classList.remove('text-zinc-400');
-                catchSwitchText.classList.add('text-accentPlay', 'shadow-sm');
+                heroGlow.className = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accentPlay/15 blur-[140px] pointer-events-none z-0 transition-all duration-700";
+                catchphraseBorder.className = "absolute top-0 left-0 w-1 h-full bg-accentPlay transition-all duration-500";
+                catchSwitchText.className = "text-accentPlay font-semibold transition-all duration-300 shadow-sm";
                 toggleInstruction.textContent = "스위치가 켜졌습니다. 그가 아끼는 취향의 서랍에 불이 들어옵니다.";
 
-                // Brand Strength Cards interactive visual upgrade (Play Mode)
-                strengthCard1.classList.add('shadow-glow-play', 'border-zinc-800/80');
-                strengthCard2.classList.add('shadow-glow-play', 'border-zinc-800/80');
-                strengthCard3.classList.add('shadow-glow-play', 'border-zinc-800/80');
-                
-                // Strength Card 1 Accent (Immersive Focus)
-                strengthCard1.querySelector('.icon-box').classList.remove('bg-zinc-800', 'text-zinc-400');
-                strengthCard1.querySelector('.icon-box').classList.add('bg-rose-950/40', 'text-accentPlay');
-                strengthCard1.querySelector('.strength-title').classList.add('text-white');
-                strengthCard1.querySelector('.strength-badge').classList.add('text-accentPlay');
+                // Strength Cards Content Toggle to ON (Play) State
+                strengthCard1.querySelector('.strength-title').textContent = contents.on.card1.title;
+                strengthCard1.querySelector('.strength-desc').textContent = contents.on.card1.desc;
+                strengthCard1.querySelector('.strength-badge').textContent = contents.on.card1.badge;
 
-                // Strength Card 2 Accent (Tastes Balance)
-                strengthCard2.querySelector('.icon-box').classList.remove('bg-zinc-800', 'text-zinc-400');
-                strengthCard2.querySelector('.icon-box').classList.add('bg-rose-950/40', 'text-accentPlay');
-                strengthCard2.querySelector('.strength-title').classList.add('text-white');
-                strengthCard2.querySelector('.strength-badge').classList.add('text-accentPlay');
+                strengthCard2.querySelector('.strength-title').textContent = contents.on.card2.title;
+                strengthCard2.querySelector('.strength-desc').textContent = contents.on.card2.desc;
+                strengthCard2.querySelector('.strength-badge').textContent = contents.on.card2.badge;
 
-                // Strength Card 3 Accent (Simple Authenticity)
-                strengthCard3.querySelector('.icon-box').classList.remove('bg-zinc-800', 'text-zinc-400');
-                strengthCard3.querySelector('.icon-box').classList.add('bg-rose-950/40', 'text-accentPlay');
-                strengthCard3.querySelector('.strength-title').classList.add('text-white');
-                strengthCard3.querySelector('.strength-badge').classList.add('text-accentPlay');
+                strengthCard3.querySelector('.strength-title').textContent = contents.on.card3.title;
+                strengthCard3.querySelector('.strength-desc').textContent = contents.on.card3.desc;
+                strengthCard3.querySelector('.strength-badge').textContent = contents.on.card3.badge;
+
+                // Strength Cards Visual Tuning
+                strengthCard1.classList.add('shadow-glow-play', 'border-accentPlay/20');
+                strengthCard2.classList.add('shadow-glow-play', 'border-accentPlay/20');
+                strengthCard3.classList.add('shadow-glow-play', 'border-accentPlay/20');
 
                 // Music Player Widget Transformation
                 vibeWidget.classList.add('shadow-glow-play', 'border-accentPlay/20');
                 vibeTitle.textContent = "Night Synthwave / Cyberpunk";
                 vibeSub.textContent = "Focus Passion Drive (120 BPM)";
                 playerProgress.style.width = "78%";
-                playerProgress.classList.remove('bg-accentWork');
-                playerProgress.classList.add('bg-accentPlay');
+                playerProgress.className = "h-full bg-accentPlay transition-all duration-700";
                 albumCover.classList.add('border-accentPlay/40');
                 eqBars.forEach(bar => {
                     bar.classList.remove('bg-zinc-700');
@@ -663,33 +789,25 @@
                 specsWidget.classList.add('border-accentPlay/10');
                 specLabel1.textContent = "Baseline Rally (코트 랠리 집중력)";
                 specVal1.textContent = "92%";
-                specVal1.classList.remove('text-accentWork');
-                specVal1.classList.add('text-accentPlay');
+                specVal1.className = "text-accentPlay font-semibold transition-colors duration-300";
                 specBar1.style.width = "92%";
-                specBar1.classList.remove('bg-accentWork');
-                specBar1.classList.add('bg-accentPlay');
+                specBar1.className = "h-full bg-accentPlay transition-all duration-700";
 
                 specLabel2.textContent = "Acoustic Beat Sync (사운드 조율도)";
                 specVal2.textContent = "94%";
-                specVal2.classList.remove('text-accentWork');
-                specVal2.classList.add('text-accentPlay');
+                specVal2.className = "text-accentPlay font-semibold transition-colors duration-300";
                 specBar2.style.width = "94%";
-                specBar2.classList.remove('bg-accentWork');
-                specBar2.classList.add('bg-accentPlay');
+                specBar2.className = "h-full bg-accentPlay transition-all duration-700";
 
                 specLabel3.textContent = "Clutch Concentration (상황 몰입력)";
                 specVal3.textContent = "98%";
-                specVal3.classList.remove('text-accentWork');
-                specVal3.classList.add('text-accentPlay');
+                specVal3.className = "text-accentPlay font-semibold transition-colors duration-300";
                 specBar3.style.width = "98%";
-                specBar3.classList.remove('bg-accentWork');
-                specBar3.classList.add('bg-accentPlay');
+                specBar3.className = "h-full bg-accentPlay transition-all duration-700";
 
-                // Dual Archives interactive changes
-                // Left Column (Work Space): dimmed down gracefully but still beautiful
+                // Dual Archives Interactive Tuning
                 worldWork.classList.add('opacity-50');
-                workIndicatorDot.classList.remove('bg-accentWork');
-                workIndicatorDot.classList.add('bg-zinc-700');
+                workIndicatorDot.className = "w-2 h-2 rounded-full bg-zinc-700 transition-colors duration-300";
                 workIndicatorText.textContent = "BACKGROUND STABLE";
                 workIndicatorText.classList.remove('text-zinc-300');
                 workIndicatorText.classList.add('text-zinc-600');
@@ -703,15 +821,12 @@
                 });
                 workFootLabel.classList.add('text-zinc-700');
                 workFootLabel.classList.remove('text-zinc-500');
-                workFootDot.classList.remove('bg-zinc-800');
-                workFootDot.classList.add('bg-zinc-950');
+                workFootDot.className = "w-2 h-2 rounded-full bg-zinc-950 transition-colors duration-300";
 
-                // Right Column (Play Space): High Intensity Focus
-                worldPlay.classList.remove('opacity-40', 'bg-zinc-900/10', 'border-zinc-900/60');
+                worldPlay.classList.remove('opacity-40');
                 worldPlay.classList.add('bg-zinc-900/50', 'border-accentPlay/30', 'shadow-glow-play');
                 
-                playIndicatorDot.classList.remove('bg-zinc-700');
-                playIndicatorDot.classList.add('bg-accentPlay', 'pulse-glow');
+                playIndicatorDot.className = "w-2 h-2 rounded-full bg-accentPlay pulse-glow transition-all duration-300";
                 playIndicatorText.textContent = "PASSION RUNNING";
                 playIndicatorText.classList.remove('text-zinc-500');
                 playIndicatorText.classList.add('text-accentPlay');
@@ -723,7 +838,7 @@
 
                 // Play Item Cards Lightup
                 playItemCards.forEach(card => {
-                    card.classList.remove('bg-zinc-950/30', 'border-zinc-900');
+                    card.classList.remove('bg-zinc-950/30');
                     card.classList.add('bg-zinc-950/80', 'border-zinc-800');
                 });
                 playItemTitles.forEach(title => {
@@ -735,96 +850,71 @@
                     desc.classList.add('text-zinc-300');
                 });
 
-                playQuoteBox.classList.remove('border-zinc-900', 'bg-zinc-950/10', 'text-zinc-500');
+                playQuoteBox.classList.remove('bg-zinc-950/10', 'text-zinc-500');
                 playQuoteBox.classList.add('border-rose-950', 'bg-rose-950/10', 'text-zinc-300');
 
-                playFootLabel.textContent = "PLAY SPACE ONLINE";
+                playFootLabel.textContent = "PLAY ROOM ONLINE";
                 playFootLabel.classList.remove('text-zinc-600');
                 playFootLabel.classList.add('text-accentPlay');
-                playFootDot.classList.remove('bg-zinc-900');
-                playFootDot.classList.add('bg-accentPlay');
+                playFootDot.className = "w-2 h-2 rounded-full bg-accentPlay transition-colors duration-300";
 
                 // Interactive Mini Indicator Dot in Logo Header
-                document.querySelector('.logo-dot').classList.remove('bg-zinc-600');
-                document.querySelector('.logo-dot').classList.add('bg-accentPlay');
-
-                // SSAFY Badge Pulse Accent Change
-                ssafyPulseDot.classList.remove('bg-accentWork');
-                ssafyPulseDot.classList.add('bg-accentPlay');
+                document.querySelector('.logo-dot').className = "w-3 h-3 rounded-full bg-accentPlay logo-dot transition-colors duration-300";
+                ssafyPulseDot.className = "w-1.5 h-1.5 rounded-full bg-accentPlay pulse-glow";
 
             } else {
-                // Apply "OFF" Calm Mode (Work Mode - Royal Blue Accent Theme)
+                // Apply "OFF" Calm Mode (Work Mode)
                 body.classList.remove('switch-on');
 
                 // Switch thumbs transform
-                masterSwitchThumb.classList.remove('translate-x-10');
-                masterSwitchThumb.classList.add('translate-x-0');
-                masterSwitchThumb.classList.remove('bg-accentPlay');
-                masterSwitchThumb.classList.add('bg-zinc-600');
+                masterSwitchThumb.className = "pointer-events-none block h-8 w-8 transform rounded-full bg-zinc-600 shadow-md ring-0 transition-all duration-500 ease-in-out translate-x-0 flex items-center justify-center";
                 masterSwitch.ariaChecked = "false";
 
-                globalToggleThumb.classList.remove('translate-x-5');
-                globalToggleThumb.classList.add('translate-x-0');
-                globalToggleThumb.classList.remove('bg-accentPlay');
-                globalToggleThumb.classList.add('bg-zinc-400');
+                globalToggleThumb.className = "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-zinc-400 shadow ring-0 transition duration-300 ease-in-out translate-x-0";
                 globalToggle.ariaChecked = "false";
 
                 // Text labels on Hero Toggle Switch
-                switchOffLabel.classList.add('text-accentWork', 'scale-105');
-                switchOffLabel.classList.remove('text-zinc-600');
-                switchOnLabel.classList.add('text-zinc-600');
-                switchOnLabel.classList.remove('text-accentPlay', 'scale-105');
+                switchOffLabel.className = "text-sm font-semibold transition-all duration-300 text-accentWork scale-105";
+                switchOnLabel.className = "text-sm font-semibold transition-all duration-300 text-zinc-600";
 
                 // Quick Header Nav Labels
-                navWorkLabel.classList.add('text-accentWork', 'font-semibold');
-                navWorkLabel.classList.remove('text-zinc-500');
-                navPlayLabel.classList.remove('text-accentPlay', 'font-semibold');
-                navPlayLabel.classList.add('text-zinc-500');
+                navWorkLabel.className = "transition-colors duration-300 text-accentWork font-semibold";
+                navPlayLabel.className = "transition-colors duration-300 text-zinc-500";
 
                 // Ambient Glow & Accent color changes in Hero
                 heroGreeting.innerHTML = '반갑습니다, 차분하게 생각하고 기록하는';
-                heroGlow.classList.remove('bg-accentPlay/15');
-                heroGlow.classList.add('bg-accentWorkDark/20');
-                catchphraseBorder.classList.remove('bg-accentPlay');
-                catchphraseBorder.classList.add('bg-accentWorkDark');
-                catchSwitchText.classList.remove('text-accentPlay', 'shadow-sm');
-                catchSwitchText.classList.add('text-zinc-400');
+                heroGlow.className = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accentWorkDark/20 blur-[140px] pointer-events-none z-0 transition-all duration-700";
+                catchphraseBorder.className = "absolute top-0 left-0 w-1 h-full bg-accentWorkDark transition-all duration-500";
+                catchSwitchText.className = "text-zinc-400 font-semibold transition-all duration-300";
                 toggleInstruction.textContent = "스위치 혹은 키보드 S 키를 눌러 면모를 반전해 보세요.";
 
-                // Brand Strength Cards cleanup (Work mode Royal Blue shadow/accent)
-                strengthCard1.classList.remove('shadow-glow-play', 'border-zinc-800/80');
-                strengthCard2.classList.remove('shadow-glow-play', 'border-zinc-800/80');
-                strengthCard3.classList.remove('shadow-glow-play', 'border-zinc-800/80');
+                // Strength Cards Content Toggle to OFF (Calm) State
+                strengthCard1.querySelector('.strength-title').textContent = contents.off.card1.title;
+                strengthCard1.querySelector('.strength-desc').textContent = contents.off.card1.desc;
+                strengthCard1.querySelector('.strength-badge').textContent = contents.off.card1.badge;
 
-                // Strength Card 1 Reset (Work Mode Accent)
-                strengthCard1.querySelector('.icon-box').classList.add('bg-zinc-800', 'text-zinc-400');
-                strengthCard1.querySelector('.icon-box').classList.remove('bg-rose-950/40', 'text-accentPlay');
-                strengthCard1.querySelector('.strength-title').classList.remove('text-white');
-                strengthCard1.querySelector('.strength-badge').classList.remove('text-accentPlay');
+                strengthCard2.querySelector('.strength-title').textContent = contents.off.card2.title;
+                strengthCard2.querySelector('.strength-desc').textContent = contents.off.card2.desc;
+                strengthCard2.querySelector('.strength-badge').textContent = contents.off.card2.badge;
 
-                // Strength Card 2 Reset
-                strengthCard2.querySelector('.icon-box').classList.add('bg-zinc-800', 'text-zinc-400');
-                strengthCard2.querySelector('.icon-box').classList.remove('bg-rose-950/40', 'text-accentPlay');
-                strengthCard2.querySelector('.strength-title').classList.remove('text-white');
-                strengthCard2.querySelector('.strength-badge').classList.remove('text-accentPlay');
+                strengthCard3.querySelector('.strength-title').textContent = contents.off.card3.title;
+                strengthCard3.querySelector('.strength-desc').textContent = contents.off.card3.desc;
+                strengthCard3.querySelector('.strength-badge').textContent = contents.off.card3.badge;
 
-                // Strength Card 3 Reset
-                strengthCard3.querySelector('.icon-box').classList.add('bg-zinc-800', 'text-zinc-400');
-                strengthCard3.querySelector('.icon-box').classList.remove('bg-rose-950/40', 'text-accentPlay');
-                strengthCard3.querySelector('.strength-title').classList.remove('text-white');
-                strengthCard3.querySelector('.strength-badge').classList.remove('text-accentPlay');
+                // Brand Strength Cards cleanup
+                strengthCard1.classList.remove('shadow-glow-play', 'border-accentPlay/20');
+                strengthCard2.classList.remove('shadow-glow-play', 'border-accentPlay/20');
+                strengthCard3.classList.remove('shadow-glow-play', 'border-accentPlay/20');
 
                 // Music Player Widget Reset
                 vibeWidget.classList.remove('shadow-glow-play', 'border-accentPlay/20');
                 vibeTitle.textContent = "Coffee & Coding Beats";
                 vibeSub.textContent = "Quiet Lo-fi Session (65 BPM)";
                 playerProgress.style.width = "35%";
-                playerProgress.classList.remove('bg-accentPlay');
-                playerProgress.classList.add('bg-accentWork');
+                playerProgress.className = "h-full bg-accentWork transition-all duration-700";
                 albumCover.classList.remove('border-accentPlay/40');
                 eqBars.forEach(bar => {
-                    bar.classList.add('bg-zinc-700');
-                    bar.classList.remove('bg-accentPlay');
+                    bar.className = "eq-bar bg-zinc-700";
                     bar.style.animationPlayState = 'paused';
                 });
 
@@ -832,34 +922,25 @@
                 specsWidget.classList.remove('border-accentPlay/10');
                 specLabel1.textContent = "Logic Accuracy (논리 설계력)";
                 specVal1.textContent = "95%";
-                specVal1.classList.add('text-accentWork');
-                specVal1.classList.remove('text-accentPlay');
+                specVal1.className = "text-accentWork font-semibold transition-colors duration-300";
                 specBar1.style.width = "95%";
-                specBar1.classList.add('bg-accentWork');
-                specBar1.classList.remove('bg-accentPlay');
+                specBar1.className = "h-full bg-accentWork transition-all duration-700";
 
-                // Dynamic Specs Elements Resets
                 specLabel2.textContent = "Refactoring Focus (클린 코드 집착)";
                 specVal2.textContent = "90%";
-                specVal2.classList.add('text-accentWork');
-                specVal2.classList.remove('text-accentPlay');
+                specVal2.className = "text-accentWork font-semibold transition-colors duration-300";
                 specBar2.style.width = "90%";
-                specBar2.classList.add('bg-accentWork');
-                specBar2.classList.remove('bg-accentPlay');
+                specBar2.className = "h-full bg-accentWork transition-all duration-700";
 
                 specLabel3.textContent = "Coffee Synergy (몰입 지속도)";
                 specVal3.textContent = "85%";
-                specVal3.classList.add('text-accentWork');
-                specVal3.classList.remove('text-accentPlay');
+                specVal3.className = "text-accentWork font-semibold transition-colors duration-300";
                 specBar3.style.width = "85%";
-                specBar3.classList.add('bg-accentWork');
-                specBar3.classList.remove('bg-accentPlay');
+                specBar3.className = "h-full bg-accentWork transition-all duration-700";
 
                 // Dual Archives interactive changes reset
-                // Left Column (Work Space): Brightened & fully active with Royal Blue
                 worldWork.classList.remove('opacity-50');
-                workIndicatorDot.classList.add('bg-accentWork');
-                workIndicatorDot.classList.remove('bg-zinc-700');
+                workIndicatorDot.className = "w-2 h-2 rounded-full bg-accentWork transition-colors duration-300";
                 workIndicatorText.textContent = "CALM READY";
                 workIndicatorText.classList.add('text-zinc-300');
                 workIndicatorText.classList.remove('text-zinc-600');
@@ -873,15 +954,12 @@
                 });
                 workFootLabel.classList.remove('text-zinc-700');
                 workFootLabel.classList.add('text-zinc-500');
-                workFootDot.classList.add('bg-zinc-800');
-                workFootDot.classList.remove('bg-zinc-950');
+                workFootDot.className = "w-2 h-2 rounded-full bg-zinc-800 transition-colors duration-300";
 
-                // Right Column (Play Space): Dimmed down to quiet mode
-                worldPlay.classList.add('opacity-40', 'bg-zinc-900/10', 'border-zinc-900/60');
+                worldPlay.classList.add('opacity-40');
                 worldPlay.classList.remove('bg-zinc-900/50', 'border-accentPlay/30', 'shadow-glow-play');
                 
-                playIndicatorDot.classList.add('bg-zinc-700');
-                playIndicatorDot.classList.remove('bg-accentPlay', 'pulse-glow');
+                playIndicatorDot.className = "w-2 h-2 rounded-full bg-zinc-700 transition-all duration-300";
                 playIndicatorText.textContent = "STANDBY";
                 playIndicatorText.classList.add('text-zinc-500');
                 playIndicatorText.classList.remove('text-accentPlay');
@@ -891,9 +969,9 @@
                 playMainTitle.classList.add('text-zinc-400');
                 playMainTitle.classList.remove('text-white');
 
-                // Play Item Cards Lightup Reset
+                // Play Item Cards Reset
                 playItemCards.forEach(card => {
-                    card.classList.add('bg-zinc-950/30', 'border-zinc-900');
+                    card.classList.add('bg-zinc-950/30');
                     card.classList.remove('bg-zinc-950/80', 'border-zinc-800');
                 });
                 playItemTitles.forEach(title => {
@@ -905,38 +983,32 @@
                     desc.classList.remove('text-zinc-300');
                 });
 
-                playQuoteBox.classList.add('border-zinc-900', 'bg-zinc-950/10', 'text-zinc-500');
-                playQuoteBox.classList.remove('border-rose-950', 'bg-rose-950/10', 'text-rose-400');
+                playQuoteBox.classList.add('bg-zinc-950/10', 'text-zinc-500');
+                playQuoteBox.classList.remove('border-rose-950', 'bg-rose-950/10', 'text-zinc-300');
 
                 playFootLabel.textContent = "Play Room Off-line";
                 playFootLabel.classList.add('text-zinc-600');
                 playFootLabel.classList.remove('text-accentPlay');
-                playFootDot.classList.add('bg-zinc-900');
-                playFootDot.classList.remove('bg-accentPlay');
+                playFootDot.className = "w-2 h-2 rounded-full bg-zinc-900 transition-colors duration-300";
 
                 // Interactive Mini Indicator Dot in Logo Header Reset
-                document.querySelector('.logo-dot').classList.add('bg-zinc-600');
-                document.querySelector('.logo-dot').classList.remove('bg-accentPlay');
-
-                // SSAFY Badge Pulse Accent Change
-                ssafyPulseDot.classList.remove('bg-accentPlay');
-                ssafyPulseDot.classList.add('bg-accentWork');
+                document.querySelector('.logo-dot').className = "w-3 h-3 rounded-full bg-zinc-600 logo-dot transition-colors duration-300";
+                ssafyPulseDot.className = "w-1.5 h-1.5 rounded-full bg-accentWork pulse-glow";
             }
         }
 
-        // Attach Click Event Listeners to both master switches
+        // Attach Click Event Listeners to master switches & theme toggler
         masterSwitch.addEventListener('click', toggleState);
         globalToggle.addEventListener('click', toggleState);
+        themeToggleBtn.addEventListener('click', toggleTheme);
 
         // Header transparency adjustment on scroll
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
             if (window.scrollY > 50) {
-                header.classList.add('bg-darkBg/90', 'border-zinc-800/50');
-                header.classList.remove('bg-darkBg/60', 'border-zinc-900');
+                header.classList.add('shadow-md');
             } else {
-                header.classList.add('bg-darkBg/60', 'border-zinc-900');
-                header.classList.remove('bg-darkBg/90', 'border-zinc-800/50');
+                header.classList.remove('shadow-md');
             }
         });
 

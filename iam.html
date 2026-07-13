@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>정재원의 기록 보관소</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Pretendard for sleek Korean typography -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.tailwindcss.com/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Pretendard', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#09090b', // Zinc 950 deep dark
+                        playBg: '#0e0204', // Deep wine black for Passion ON mode
+                        cardBg: '#18181b', // Zinc 900
+                        cardBorder: '#27272a', // Zinc 800
+                        // Royal Blue for Work
+                        accentWork: '#3b52ee', // Highly readable royal blue
+                        accentWorkDark: '#111E6C', // Deep premium royal blue
+                        accentPlay: '#f43f5e', // Rose/Neon pink for Play
+                    },
+                    boxShadow: {
+                        'glow-work': '0 0 30px rgba(17, 30, 108, 0.4)', 
+                        'glow-play': '0 0 35px rgba(244, 63, 94, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #09090b;
+            color: #f4f4f5;
+            overflow-x: hidden;
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            transition: background-color 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.switch-on {
+            background-color: #0e0204;
+        }
+
+        /* Custom scrollbar for premium chic look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3f3f46;
+        }
+
+        /* Interactive Custom Mouse Spotlight */
+        .spotlight {
+            pointer-events: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 10;
+            background: radial-gradient(
+                600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(59, 82, 238, 0.08), 
+                transparent 80%
+            );
+            transition: background 0.4s ease;
+        }
+
+        /* Ambient glows for the Switch state (Play Mode) */
+        .switch-on .spotlight {
+            background: radial-gradient(
+                700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(244, 63, 94, 0.09), 
+                rgba(17, 30, 108, 0.01) 40%,
+                transparent 80%
+            );
+        }
+
+        /* Smooth state transitions */
+        .mode-transition {
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Keyframe animations */
+        @keyframes subtlePulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.03); }
+        }
+        .pulse-glow {
+            animation: subtlePulse 3s infinite ease-in-out;
+        }
+
+        /* Equalizer Animation for music vibe card */
+        @keyframes eqBar {
+            0%, 100% { height: 4px; }
+            50% { height: 24px; }
+        }
+        .eq-bar {
+            width: 3px;
+            height: 4px;
+            animation: eqBar 1.2s ease-in-out infinite;
+        }
+        .eq-bar:nth-child(2) { animation-delay: 0.15s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.35s; }
+        .eq-bar:nth-child(4) { animation-delay: 0.05s; }
+        .eq-bar:nth-child(5) { animation-delay: 0.25s; }
+    </style>
+</head>
+<body class="selection:bg-zinc-800 selection:text-white transition-colors duration-500">
+
+    <!-- Interactive Spotlight Overlay -->
+    <div class="spotlight" id="spotlight"></div>
+
+    <header class="fixed top-0 left-0 w-full z-40 backdrop-blur-md bg-darkBg/60 border-b border-zinc-900/60 transition-all duration-300">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <!-- Logo / Signature -->
+            <a href="#" class="flex items-center space-x-2 group">
+                <div class="w-3 h-3 rounded-full bg-zinc-600 group-hover:bg-accentWork transition-colors duration-300 logo-dot"></div>
+                <span class="font-semibold tracking-tight text-zinc-200 group-hover:text-white transition-colors">JAEWON CHUNG</span>
+            </a>
+
+            <!-- Mode Quick Indicators for Desktop -->
+            <div class="hidden md:flex items-center space-x-6 text-xs tracking-widest text-zinc-400">
+                <span id="nav-work-label" class="transition-colors duration-300 text-accentWork font-semibold">WORK : CALM DEVELOPER</span>
+                <span class="text-zinc-700">|</span>
+                <span id="nav-play-label" class="transition-colors duration-300">PLAY : PASSIONATE EXPLORER</span>
+            </div>
+
+            <!-- Global Mini Switch (Sticky Header Toggle) -->
+            <div class="flex items-center space-x-3">
+                <span class="text-[10px] font-mono text-zinc-500 uppercase tracking-wider hidden sm:inline">Press <kbd class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 rounded text-[9px]">S</kbd></span>
+                <button id="global-toggle" class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-300 ease-in-out focus:outline-none bg-zinc-800" role="switch" aria-checked="false">
+                    <span class="sr-only">Toggle mood</span>
+                    <span id="global-toggle-thumb" aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-zinc-400 shadow ring-0 transition duration-300 ease-in-out translate-x-0"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative min-h-screen flex flex-col justify-center items-center px-6 pt-24 pb-16 overflow-hidden">
+        <!-- Ambient background glows -->
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-zinc-900/40 blur-[100px] pointer-events-none z-0"></div>
+        <div id="hero-glow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accentWorkDark/20 blur-[140px] pointer-events-none z-0 transition-all duration-700"></div>
+
+        <div class="max-w-3xl w-full text-center z-10 space-y-8">
+            <!-- SSAFY Tag -->
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border border-zinc-800 bg-zinc-900/80 text-xs text-zinc-400">
+                <span class="w-1.5 h-1.5 rounded-full bg-accentWork pulse-glow" id="ssafy-pulse-dot"></span>
+                <span>SSAFY 16기</span>
+            </div>
+
+            <!-- Main Intro Greeting -->
+            <div class="space-y-4">
+                <p id="hero-greeting" class="text-sm md:text-base font-mono text-zinc-400 tracking-wider transition-all duration-500">
+                    반갑습니다, 차분하게 생각하고 기록하는
+                </p>
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-white leading-tight">
+                    정재원입니다.
+                </h1>
+            </div>
+
+            <!-- Catchphrase block -->
+            <div class="p-6 md:p-8 rounded-2xl bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-sm max-w-2xl mx-auto relative overflow-hidden group">
+                <div class="absolute top-0 left-0 w-1 h-full bg-accentWorkDark transition-all duration-500" id="catchphrase-border"></div>
+                <p class="text-zinc-300 md:text-lg leading-relaxed text-left font-light pl-2">
+                    "좋아하는 것 앞에서 <span id="catch-switch-text" class="text-zinc-400 font-semibold transition-all duration-300">스위치</span>가 켜지는,<br class="hidden sm:inline">
+                    거창한 포장 없이 나만의 즐거움을 수집하는 기록 보관소."
+                </p>
+            </div>
+
+            <!-- Interactive Core Switch Module -->
+            <div class="pt-6 pb-2 space-y-4 max-w-sm mx-auto">
+                <div class="flex items-center justify-center space-x-6 bg-zinc-900/90 border border-zinc-800 p-4 rounded-2xl shadow-xl">
+                    <span id="switch-off-label" class="text-sm font-semibold transition-all duration-300 text-accentWork scale-105">
+                        OFF <span class="text-xs block font-light text-zinc-500">Calm Dev</span>
+                    </span>
+                    
+                    <!-- Main Master Toggle -->
+                    <button id="master-switch" class="relative inline-flex h-10 w-20 shrink-0 cursor-pointer rounded-full border-4 border-zinc-800 bg-zinc-950 transition-colors duration-500 ease-in-out focus:outline-none focus:ring-2 focus:ring-zinc-700" role="switch" aria-checked="false">
+                        <span id="master-switch-thumb" class="pointer-events-none block h-8 w-8 transform rounded-full bg-zinc-600 shadow-md ring-0 transition-all duration-500 ease-in-out translate-x-0 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-zinc-950" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </span>
+                    </button>
+
+                    <span id="switch-on-label" class="text-sm font-semibold text-zinc-600 transition-all duration-300">
+                        ON <span class="text-xs block font-light text-zinc-500">Focused</span>
+                    </span>
+                </div>
+                <p id="toggle-instruction" class="text-[11px] text-zinc-500 italic">스위치 혹은 키보드 <kbd class="px-1.5 py-0.5 bg-zinc-900 border border-zinc-800 rounded font-mono text-[9px] text-zinc-400">S</kbd> 키를 눌러 면모를 반전해 보세요.</p>
+            </div>
+        </div>
+
+        <!-- Scroll down indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center space-y-1 opacity-60 animate-bounce">
+            <span class="text-[10px] font-mono tracking-widest text-zinc-500 uppercase">Scroll</span>
+            <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+        </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-6 py-20 border-t border-zinc-900 relative">
+        <div class="text-center md:text-left mb-12 space-y-2">
+            <h2 class="text-xs font-mono uppercase tracking-widest text-zinc-500 animate-pulse">Identity & Strength</h2>
+            <p class="text-2xl md:text-3xl font-bold text-white">애쓰지 않는 정재원의 세 가지 매력</p>
+        </div>
+
+        <!-- Strengths Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Strength 1: 몰입력 -->
+            <div id="strength-card-1" class="mode-transition p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between space-y-6 hover:border-zinc-700 hover:bg-zinc-900/80">
+                <div class="space-y-4">
+                    <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center transition-all duration-500 icon-box text-zinc-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-zinc-200 transition-colors duration-300 strength-title">스위치가 켜지는 몰입력</h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed font-light">
+                        평소에는 조용하고 신중하지만 마음을 끄는 주제가 던져지면 에너지가 치솟습니다. 복잡한 시스템 내부 최적화나 설계 구조 분석 등 깊이 있는 탐구에 즉각 몰입합니다.
+                    </p>
+                </div>
+                <div class="text-xs font-mono text-zinc-600 transition-colors duration-300 strength-badge">#Passion_On</div>
+            </div>
+
+            <!-- Strength 2: 취향의 밸런스 -->
+            <div id="strength-card-2" class="mode-transition p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between space-y-6 hover:border-zinc-700 hover:bg-zinc-900/80">
+                <div class="space-y-4">
+                    <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center transition-all duration-500 icon-box text-zinc-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-zinc-200 transition-colors duration-300 strength-title">취향의 밸런스</h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed font-light">
+                        코트 위에서 땀 흘리며 템포를 지배하는 다이내믹한 테니스부터, 감각적인 비트 사운드로 가만히 집중을 조력하는 장비 수집까지, 정적이고 동적인 취향을 조화롭게 이룹니다.
+                    </p>
+                </div>
+                <div class="text-xs font-mono text-zinc-600 transition-colors duration-300 strength-badge">#Work_Play_Balance</div>
+            </div>
+
+            <!-- Strength 3: 담백한 진정성 -->
+            <div id="strength-card-3" class="mode-transition p-8 rounded-2xl bg-zinc-900/50 border border-zinc-800 flex flex-col justify-between space-y-6 hover:border-zinc-700 hover:bg-zinc-900/80">
+                <div class="space-y-4">
+                    <div class="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center transition-all duration-500 icon-box text-zinc-400">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-zinc-200 transition-colors duration-300 strength-title">애쓰지 않는 담백함</h3>
+                    <p class="text-zinc-400 text-sm leading-relaxed font-light">
+                        과장되거나 억지스럽게 포장된 이력서 대신, 스스로 경험하고 가치를 느낀 본질 그대로만을 심플하게 정제하여 공유하는 편안하고 무해한 소통을 중요시합니다.
+                    </p>
+                </div>
+                <div class="text-xs font-mono text-zinc-600 transition-colors duration-300 strength-badge">#Honest_Chic</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-6 pb-20 relative">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            
+            <!-- CURRENT VIBE PLAYER (Interactive Music Player Mockup) -->
+            <div id="vibe-widget" class="mode-transition p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800 flex flex-col justify-between space-y-6">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-mono tracking-widest text-zinc-500">CURRENT VIBE</span>
+                    <!-- Equalizer Container -->
+                    <div class="flex items-end space-x-1 h-6">
+                        <span class="eq-bar bg-zinc-700"></span>
+                        <span class="eq-bar bg-zinc-700"></span>
+                        <span class="eq-bar bg-zinc-700"></span>
+                        <span class="eq-bar bg-zinc-700"></span>
+                        <span class="eq-bar bg-zinc-700"></span>
+                    </div>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <!-- Album Cover Mockup -->
+                    <div id="album-cover" class="w-16 h-16 rounded-lg bg-zinc-800 border border-zinc-700/50 flex items-center justify-center transition-all duration-500 relative overflow-hidden shrink-0">
+                        <div class="absolute inset-2 rounded-full border border-zinc-700/80 flex items-center justify-center animate-spin" style="animation-duration: 8s;">
+                            <div class="w-3 h-3 rounded-full bg-zinc-950"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 id="vibe-title" class="text-sm font-semibold text-zinc-200 transition-colors duration-300">Coffee & Coding Beats</h4>
+                        <p id="vibe-sub" class="text-xs text-zinc-500 font-mono transition-colors duration-300">Quiet Lo-fi Session (65 BPM)</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    <div class="h-1 bg-zinc-800 rounded-full overflow-hidden">
+                        <div id="player-progress" class="h-full bg-accentWork transition-all duration-700" style="width: 35%;"></div>
+                    </div>
+                    <div class="flex justify-between text-[9px] font-mono text-zinc-600">
+                        <span>02:14</span>
+                        <span>05:40</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DYNAMIC SPEC METER (Interactive Radar-like Specs) -->
+            <div id="specs-widget" class="mode-transition p-6 rounded-2xl bg-zinc-900/40 border border-zinc-800 flex flex-col justify-between space-y-4">
+                <span class="text-[10px] font-mono tracking-widest text-zinc-500">SESSION METERS</span>
+                
+                <div class="space-y-4" id="meter-bars-container">
+                    <!-- Stat 1 -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span id="spec-label-1" class="text-zinc-400 transition-colors duration-300">Logic Accuracy (논리 기획력)</span>
+                            <span id="spec-val-1" class="text-accentWork font-semibold transition-colors duration-300">95%</span>
+                        </div>
+                        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div id="spec-bar-1" class="h-full bg-accentWork transition-all duration-700" style="width: 95%;"></div>
+                        </div>
+                    </div>
+                    <!-- Stat 2 -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span id="spec-label-2" class="text-zinc-400 transition-colors duration-300">Refactoring Focus (클린 코드 집착)</span>
+                            <span id="spec-val-2" class="text-accentWork font-semibold transition-colors duration-300">90%</span>
+                        </div>
+                        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div id="spec-bar-2" class="h-full bg-accentWork transition-all duration-700" style="width: 90%;"></div>
+                        </div>
+                    </div>
+                    <!-- Stat 3 -->
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-xs font-mono">
+                            <span id="spec-label-3" class="text-zinc-400 transition-colors duration-300">Coffee Synergy (몰입 지속도)</span>
+                            <span id="spec-val-3" class="text-accentWork font-semibold transition-colors duration-300">85%</span>
+                        </div>
+                        <div class="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                            <div id="spec-bar-3" class="h-full bg-accentWork transition-all duration-700" style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="max-w-5xl mx-auto px-6 py-20 border-t border-zinc-900 relative">
+        <div class="text-center mb-16 space-y-2">
+            <h2 class="text-xs font-mono uppercase tracking-widest text-zinc-500">Dual Archives</h2>
+            <p class="text-2xl md:text-3xl font-bold text-white">정재원의 두 개의 방</p>
+            <p class="text-sm text-zinc-400 max-w-md mx-auto">기록 보관소의 서랍을 엽니다. 스위치 상태에 따라 각기 다른 조명이 켜집니다.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            
+            <!-- LEFT COLUMN: WORK (The Developer Space) -->
+            <div id="world-work" class="mode-transition relative p-8 rounded-3xl bg-zinc-900/30 border-2 border-zinc-800 hover:border-zinc-700 flex flex-col justify-between overflow-hidden">
+                <!-- Status Glow Indicator -->
+                <div class="absolute top-4 right-4 flex items-center space-x-2 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
+                    <span id="work-indicator-dot" class="w-2 h-2 rounded-full bg-accentWork transition-colors duration-300"></span>
+                    <span id="work-indicator-text" class="text-[10px] font-mono tracking-wider text-zinc-300 transition-colors duration-300">CALM READY</span>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Title -->
+                    <div>
+                        <span id="work-pre-title" class="text-xs font-mono text-accentWork tracking-widest block uppercase mb-1 transition-colors duration-300">01. Dev & Ssafy Life</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-white">차분하게 설계하는 생각의 기록</h3>
+                    </div>
+
+                    <!-- Highlight Box -->
+                    <div id="work-highlight-box" class="p-5 rounded-2xl bg-zinc-950/60 border border-zinc-800/80 space-y-3 transition-colors duration-300">
+                        <p class="text-xs text-zinc-500 font-mono">HIGHLIGHTED WORK</p>
+                        <h4 class="text-sm font-semibold text-zinc-200">싸피(SSAFY)에서 몰입했던 프로젝트</h4>
+                        <p class="text-xs text-zinc-400 leading-relaxed font-light">
+                            단순히 찍어내는 복사 코딩 대신, "왜 이 기술이 필요했는가"를 치열하게 묻고 흔적을 남깁니다. 동료들과 함께 소통하고 빌드하며 만들어가는 즐거움에 집중합니다.
+                        </p>
+                    </div>
+
+                    <!-- Minimalist tech tags -->
+                    <div class="space-y-3">
+                        <p class="text-xs font-mono text-zinc-500">FAVORITE TECH / CONCEPTS</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Modern JS</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Algorithms</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Responsive UI</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Architecture</span>
+                            <span class="tech-tag px-2.5 py-1 rounded-lg bg-zinc-900 border border-zinc-800 text-xs text-zinc-300 font-mono transition-colors duration-300">Vibe Coding</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-zinc-800/50 mt-8 flex items-center justify-between">
+                    <span id="work-foot-label" class="text-xs text-zinc-500 font-mono transition-colors duration-300">Jaewon Chung Developer Space</span>
+                    <span class="w-2 h-2 rounded-full bg-zinc-800 transition-colors duration-300" id="work-foot-dot"></span>
+                </div>
+            </div>
+
+            <!-- RIGHT COLUMN: PLAY (The Passionate Tastes Space) -->
+            <div id="world-play" class="mode-transition relative p-8 rounded-3xl bg-zinc-900/10 border-2 border-zinc-900/60 opacity-40 flex flex-col justify-between overflow-hidden">
+                <!-- Status Glow Indicator -->
+                <div class="absolute top-4 right-4 flex items-center space-x-2 bg-zinc-950/80 px-3 py-1 rounded-full border border-zinc-800">
+                    <span id="play-indicator-dot" class="w-2 h-2 rounded-full bg-zinc-700 transition-all duration-300"></span>
+                    <span id="play-indicator-text" class="text-[10px] font-mono tracking-wider text-zinc-500 transition-all duration-300">STANDBY</span>
+                </div>
+
+                <div class="space-y-8">
+                    <!-- Title -->
+                    <div>
+                        <span class="text-xs font-mono text-zinc-500 tracking-widest block uppercase mb-1" id="play-pre-title">02. Selected Tastes</span>
+                        <h3 class="text-xl md:text-2xl font-bold text-zinc-400 transition-all duration-300" id="play-main-title">정제된 깊은 몰입의 서랍</h3>
+                    </div>
+
+                    <!-- Taste Collection Grid -->
+                    <div class="space-y-4">
+                        <p class="text-xs font-mono text-zinc-500">PLAY ROOM ITEMS</p>
+                        
+                        <!-- Mini cards for Play Room -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div class="p-4 rounded-xl bg-zinc-950/30 border border-zinc-900 transition-all duration-300 play-item-card">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <span class="text-lg">🎾</span>
+                                    <h4 class="text-xs font-bold text-zinc-400 play-item-title">ACTIVE TENNIS</h4>
+                                </div>
+                                <p class="text-[11px] text-zinc-500 leading-normal play-item-desc">
+                                    코트 위에서 땀 흘리는 다이내믹한 랠리. 스트로크의 묵직한 타구감과 코트 전체의 리듬과 템포에 온전하게 에너지를 몰입시킵니다.
+                                </p>
+                            </div>
+                            <div class="p-4 rounded-xl bg-zinc-950/30 border border-zinc-900 transition-all duration-300 play-item-card">
+                                <div class="flex items-center space-x-3 mb-2">
+                                    <span class="text-lg">🎧</span>
+                                    <h4 class="text-xs font-bold text-zinc-400 play-item-title">MUSIC & DEV DEVICES</h4>
+                                </div>
+                                <p class="text-[11px] text-zinc-500 leading-normal play-item-desc">
+                                    미니멀 테크노와 로파이 하우스 큐레이션 청취. 정갈하게 가공된 기계식 키보드의 로우 피치 리니어 스위치 타건음으로 몰입의 템포를 지배합니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quote -->
+                    <div class="p-4 rounded-xl border border-zinc-900 bg-zinc-950/10 italic text-xs text-zinc-500 transition-all duration-300 font-light" id="play-quote-box">
+                        "진정한 몰입은 억지로 힘을 주는 순간이 아니라, 나를 복잡하게 포장하던 것들로부터 완전히 힘을 뺄 때 찾아옵니다."
+                    </div>
+                </div>
+
+                <div class="pt-8 border-t border-zinc-900/50 mt-8 flex items-center justify-between">
+                    <span class="text-xs text-zinc-600 font-mono transition-colors duration-300" id="play-foot-label">Play Room Off-line</span>
+                    <span class="w-2 h-2 rounded-full bg-zinc-900 transition-colors duration-300" id="play-foot-dot"></span>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Outro / Statement -->
+    <section class="max-w-3xl mx-auto px-6 py-28 text-center relative">
+        <div class="absolute inset-0 bg-gradient-to-t from-zinc-900/10 to-transparent pointer-events-none"></div>
+        <div class="space-y-6 relative z-10">
+            <p class="text-xs font-mono text-zinc-500 tracking-widest uppercase">OUTRO</p>
+            <h3 class="text-xl md:text-2xl font-light text-zinc-300 leading-relaxed max-w-lg mx-auto italic">
+                "기록을 읽어주셔서 감사합니다. 오늘도 각자의 스위치를 켜고 있을 당신을 응원합니다."
+            </h3>
+            <div class="w-8 h-[1px] bg-zinc-700 mx-auto my-6"></div>
+            <p class="text-xs text-zinc-500 tracking-wider">
+                거창한 수식어 없이, 담백한 개발자 정재원의 아카이브.
+            </p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full border-t border-zinc-950 py-10 px-6 bg-zinc-950 text-zinc-600 text-xs">
+        <div class="max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-center space-y-4 sm:space-y-0">
+            <div>
+                <p>© 2026 Jaewon Chung. All rights reserved.</p>
+            </div>
+            <div class="flex items-center space-x-4 font-mono text-[11px]">
+                <span class="hover:text-zinc-400 transition-colors">SSAFY 16기</span>
+                <span>•</span>
+                <span id="current-time-badge" class="hover:text-zinc-400 transition-colors">SEEKING STABILITY & PASSION</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const body = document.body;
+        const spotlight = document.getElementById('spotlight');
+        const masterSwitch = document.getElementById('master-switch');
+        const masterSwitchThumb = document.getElementById('master-switch-thumb');
+        const globalToggle = document.getElementById('global-toggle');
+        const globalToggleThumb = document.getElementById('global-toggle-thumb');
+        
+        // Navigation Labels
+        const navWorkLabel = document.getElementById('nav-work-label');
+        const navPlayLabel = document.getElementById('nav-play-label');
+
+        // Hero Content Elements
+        const ssafyPulseDot = document.getElementById('ssafy-pulse-dot');
+        const heroGreeting = document.getElementById('hero-greeting');
+        const heroGlow = document.getElementById('hero-glow');
+        const catchphraseBorder = document.getElementById('catchphrase-border');
+        const catchSwitchText = document.getElementById('catch-switch-text');
+        const toggleInstruction = document.getElementById('toggle-instruction');
+        const switchOffLabel = document.getElementById('switch-off-label');
+        const switchOnLabel = document.getElementById('switch-on-label');
+
+        // Cards and Sections
+        const strengthCard1 = document.getElementById('strength-card-1');
+        const strengthCard2 = document.getElementById('strength-card-2');
+        const strengthCard3 = document.getElementById('strength-card-3');
+        const worldWork = document.getElementById('world-work');
+        const worldPlay = document.getElementById('world-play');
+
+        // Interactive Widgets Elements
+        const vibeWidget = document.getElementById('vibe-widget');
+        const vibeTitle = document.getElementById('vibe-title');
+        const vibeSub = document.getElementById('vibe-sub');
+        const playerProgress = document.getElementById('player-progress');
+        const eqBars = document.querySelectorAll('.eq-bar');
+        const albumCover = document.getElementById('album-cover');
+
+        // Dynamic Specs Elements
+        const specsWidget = document.getElementById('specs-widget');
+        const specLabel1 = document.getElementById('spec-label-1');
+        const specLabel2 = document.getElementById('spec-label-2');
+        const specLabel3 = document.getElementById('spec-label-3');
+        const specVal1 = document.getElementById('spec-val-1');
+        const specVal2 = document.getElementById('spec-val-2');
+        const specVal3 = document.getElementById('spec-val-3');
+        const specBar1 = document.getElementById('spec-bar-1');
+        const specBar2 = document.getElementById('spec-bar-2');
+        const specBar3 = document.getElementById('spec-bar-3');
+
+        // World Work Details
+        const workIndicatorDot = document.getElementById('work-indicator-dot');
+        const workIndicatorText = document.getElementById('work-indicator-text');
+        const workPreTitle = document.getElementById('work-pre-title');
+        const workHighlightBox = document.getElementById('work-highlight-box');
+        const techTags = document.querySelectorAll('.tech-tag');
+        const workFootLabel = document.getElementById('work-foot-label');
+        const workFootDot = document.getElementById('work-foot-dot');
+
+        // World Play Details
+        const playIndicatorDot = document.getElementById('play-indicator-dot');
+        const playIndicatorText = document.getElementById('play-indicator-text');
+        const playPreTitle = document.getElementById('play-pre-title');
+        const playMainTitle = document.getElementById('play-main-title');
+        const playQuoteBox = document.getElementById('play-quote-box');
+        const playFootLabel = document.getElementById('play-foot-label');
+        const playFootDot = document.getElementById('play-foot-dot');
+        const playItemCards = document.querySelectorAll('.play-item-card');
+        const playItemTitles = document.querySelectorAll('.play-item-title');
+        const playItemDescs = document.querySelectorAll('.play-item-desc');
+
+        // Track Toggle State (false = OFF / Work, true = ON / Play)
+        let isPlayMode = false;
+
+        // Custom Mouse Spotlight Position Tracker with custom color changes
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            
+            spotlight.style.setProperty('--mouse-x', `${x}px`);
+            spotlight.style.setProperty('--mouse-y', `${y}px`);
+        });
+
+        // Keydown keyboard trigger: pressing "S" or Space toggles the switch
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 's' || e.key === 'S' || e.key === ' ') {
+                // Prevent scrolling with Space
+                if (e.key === ' ') e.preventDefault();
+                toggleState();
+            }
+        });
+
+        // Toggle Logic Core Function
+        function toggleState() {
+            isPlayMode = !isPlayMode;
+            updateUI();
+        }
+
+        // Apply UI styling state according to isPlayMode value
+        function updateUI() {
+            if (isPlayMode) {
+                // Apply "ON" Passion Mode
+                body.classList.add('switch-on');
+
+                // Switch thumbs transform
+                masterSwitchThumb.classList.remove('translate-x-0');
+                masterSwitchThumb.classList.add('translate-x-10');
+                masterSwitchThumb.classList.remove('bg-accentWork');
+                masterSwitchThumb.classList.add('bg-accentPlay');
+                masterSwitch.ariaChecked = "true";
+
+                globalToggleThumb.classList.remove('translate-x-0');
+                globalToggleThumb.classList.add('translate-x-5');
+                globalToggleThumb.classList.remove('bg-zinc-400');
+                globalToggleThumb.classList.add('bg-accentPlay');
+                globalToggle.ariaChecked = "true";
+
+                // Text labels on Hero Toggle Switch
+                switchOffLabel.classList.remove('text-accentWork', 'scale-105');
+                switchOffLabel.classList.add('text-zinc-600');
+                switchOnLabel.classList.remove('text-zinc-600');
+                switchOnLabel.classList.add('text-accentPlay', 'scale-105');
+
+                // Quick Header Nav Labels
+                navWorkLabel.classList.remove('text-accentWork', 'font-semibold');
+                navWorkLabel.classList.add('text-zinc-500');
+                navPlayLabel.classList.add('text-accentPlay', 'font-semibold');
+                navPlayLabel.classList.remove('text-zinc-500');
+
+                // Ambient Glow & Accent color changes in Hero
+                heroGreeting.innerHTML = '반갑습니다, 좋아하는 것 앞에 눈빛이 바뀌는';
+                heroGlow.classList.remove('bg-accentWorkDark/20');
+                heroGlow.classList.add('bg-accentPlay/15');
+                catchphraseBorder.classList.remove('bg-accentWorkDark');
+                catchphraseBorder.classList.add('bg-accentPlay');
+                catchSwitchText.classList.remove('text-zinc-400');
+                catchSwitchText.classList.add('text-accentPlay', 'shadow-sm');
+                toggleInstruction.textContent = "스위치가 켜졌습니다. 그가 아끼는 취향의 서랍에 불이 들어옵니다.";
+
+                // Brand Strength Cards interactive visual upgrade (Play Mode)
+                strengthCard1.classList.add('shadow-glow-play', 'border-zinc-800/80');
+                strengthCard2.classList.add('shadow-glow-play', 'border-zinc-800/80');
+                strengthCard3.classList.add('shadow-glow-play', 'border-zinc-800/80');
+                
+                // Strength Card 1 Accent (Immersive Focus)
+                strengthCard1.querySelector('.icon-box').classList.remove('bg-zinc-800', 'text-zinc-400');
+                strengthCard1.querySelector('.icon-box').classList.add('bg-rose-950/40', 'text-accentPlay');
+                strengthCard1.querySelector('.strength-title').classList.add('text-white');
+                strengthCard1.querySelector('.strength-badge').classList.add('text-accentPlay');
+
+                // Strength Card 2 Accent (Tastes Balance)
+                strengthCard2.querySelector('.icon-box').classList.remove('bg-zinc-800', 'text-zinc-400');
+                strengthCard2.querySelector('.icon-box').classList.add('bg-rose-950/40', 'text-accentPlay');
+                strengthCard2.querySelector('.strength-title').classList.add('text-white');
+                strengthCard2.querySelector('.strength-badge').classList.add('text-accentPlay');
+
+                // Strength Card 3 Accent (Simple Authenticity)
+                strengthCard3.querySelector('.icon-box').classList.remove('bg-zinc-800', 'text-zinc-400');
+                strengthCard3.querySelector('.icon-box').classList.add('bg-rose-950/40', 'text-accentPlay');
+                strengthCard3.querySelector('.strength-title').classList.add('text-white');
+                strengthCard3.querySelector('.strength-badge').classList.add('text-accentPlay');
+
+                // Music Player Widget Transformation
+                vibeWidget.classList.add('shadow-glow-play', 'border-accentPlay/20');
+                vibeTitle.textContent = "Night Synthwave / Cyberpunk";
+                vibeSub.textContent = "Focus Passion Drive (120 BPM)";
+                playerProgress.style.width = "78%";
+                playerProgress.classList.remove('bg-accentWork');
+                playerProgress.classList.add('bg-accentPlay');
+                albumCover.classList.add('border-accentPlay/40');
+                eqBars.forEach(bar => {
+                    bar.classList.remove('bg-zinc-700');
+                    bar.classList.add('bg-accentPlay');
+                    bar.style.animationPlayState = 'running';
+                });
+
+                // Spec Meter Widget Transformation
+                specsWidget.classList.add('border-accentPlay/10');
+                specLabel1.textContent = "Baseline Rally (코트 랠리 집중력)";
+                specVal1.textContent = "92%";
+                specVal1.classList.remove('text-accentWork');
+                specVal1.classList.add('text-accentPlay');
+                specBar1.style.width = "92%";
+                specBar1.classList.remove('bg-accentWork');
+                specBar1.classList.add('bg-accentPlay');
+
+                specLabel2.textContent = "Acoustic Beat Sync (사운드 조율도)";
+                specVal2.textContent = "94%";
+                specVal2.classList.remove('text-accentWork');
+                specVal2.classList.add('text-accentPlay');
+                specBar2.style.width = "94%";
+                specBar2.classList.remove('bg-accentWork');
+                specBar2.classList.add('bg-accentPlay');
+
+                specLabel3.textContent = "Clutch Concentration (상황 몰입력)";
+                specVal3.textContent = "98%";
+                specVal3.classList.remove('text-accentWork');
+                specVal3.classList.add('text-accentPlay');
+                specBar3.style.width = "98%";
+                specBar3.classList.remove('bg-accentWork');
+                specBar3.classList.add('bg-accentPlay');
+
+                // Dual Archives interactive changes
+                // Left Column (Work Space): dimmed down gracefully but still beautiful
+                worldWork.classList.add('opacity-50');
+                workIndicatorDot.classList.remove('bg-accentWork');
+                workIndicatorDot.classList.add('bg-zinc-700');
+                workIndicatorText.textContent = "BACKGROUND STABLE";
+                workIndicatorText.classList.remove('text-zinc-300');
+                workIndicatorText.classList.add('text-zinc-600');
+                workPreTitle.classList.remove('text-accentWork');
+                workPreTitle.classList.add('text-zinc-500');
+                workHighlightBox.classList.add('border-zinc-900');
+                workHighlightBox.classList.remove('border-zinc-800/80');
+                techTags.forEach(tag => {
+                    tag.classList.add('border-zinc-950');
+                    tag.classList.remove('border-zinc-800');
+                });
+                workFootLabel.classList.add('text-zinc-700');
+                workFootLabel.classList.remove('text-zinc-500');
+                workFootDot.classList.remove('bg-zinc-800');
+                workFootDot.classList.add('bg-zinc-950');
+
+                // Right Column (Play Space): High Intensity Focus
+                worldPlay.classList.remove('opacity-40', 'bg-zinc-900/10', 'border-zinc-900/60');
+                worldPlay.classList.add('bg-zinc-900/50', 'border-accentPlay/30', 'shadow-glow-play');
+                
+                playIndicatorDot.classList.remove('bg-zinc-700');
+                playIndicatorDot.classList.add('bg-accentPlay', 'pulse-glow');
+                playIndicatorText.textContent = "PASSION RUNNING";
+                playIndicatorText.classList.remove('text-zinc-500');
+                playIndicatorText.classList.add('text-accentPlay');
+
+                playPreTitle.classList.remove('text-zinc-500');
+                playPreTitle.classList.add('text-accentPlay');
+                playMainTitle.classList.remove('text-zinc-400');
+                playMainTitle.classList.add('text-white');
+
+                // Play Item Cards Lightup
+                playItemCards.forEach(card => {
+                    card.classList.remove('bg-zinc-950/30', 'border-zinc-900');
+                    card.classList.add('bg-zinc-950/80', 'border-zinc-800');
+                });
+                playItemTitles.forEach(title => {
+                    title.classList.remove('text-zinc-400');
+                    title.classList.add('text-rose-400');
+                });
+                playItemDescs.forEach(desc => {
+                    desc.classList.remove('text-zinc-500');
+                    desc.classList.add('text-zinc-300');
+                });
+
+                playQuoteBox.classList.remove('border-zinc-900', 'bg-zinc-950/10', 'text-zinc-500');
+                playQuoteBox.classList.add('border-rose-950', 'bg-rose-950/10', 'text-zinc-300');
+
+                playFootLabel.textContent = "PLAY SPACE ONLINE";
+                playFootLabel.classList.remove('text-zinc-600');
+                playFootLabel.classList.add('text-accentPlay');
+                playFootDot.classList.remove('bg-zinc-900');
+                playFootDot.classList.add('bg-accentPlay');
+
+                // Interactive Mini Indicator Dot in Logo Header
+                document.querySelector('.logo-dot').classList.remove('bg-zinc-600');
+                document.querySelector('.logo-dot').classList.add('bg-accentPlay');
+
+                // SSAFY Badge Pulse Accent Change
+                ssafyPulseDot.classList.remove('bg-accentWork');
+                ssafyPulseDot.classList.add('bg-accentPlay');
+
+            } else {
+                // Apply "OFF" Calm Mode (Work Mode - Royal Blue Accent Theme)
+                body.classList.remove('switch-on');
+
+                // Switch thumbs transform
+                masterSwitchThumb.classList.remove('translate-x-10');
+                masterSwitchThumb.classList.add('translate-x-0');
+                masterSwitchThumb.classList.remove('bg-accentPlay');
+                masterSwitchThumb.classList.add('bg-zinc-600');
+                masterSwitch.ariaChecked = "false";
+
+                globalToggleThumb.classList.remove('translate-x-5');
+                globalToggleThumb.classList.add('translate-x-0');
+                globalToggleThumb.classList.remove('bg-accentPlay');
+                globalToggleThumb.classList.add('bg-zinc-400');
+                globalToggle.ariaChecked = "false";
+
+                // Text labels on Hero Toggle Switch
+                switchOffLabel.classList.add('text-accentWork', 'scale-105');
+                switchOffLabel.classList.remove('text-zinc-600');
+                switchOnLabel.classList.add('text-zinc-600');
+                switchOnLabel.classList.remove('text-accentPlay', 'scale-105');
+
+                // Quick Header Nav Labels
+                navWorkLabel.classList.add('text-accentWork', 'font-semibold');
+                navWorkLabel.classList.remove('text-zinc-500');
+                navPlayLabel.classList.remove('text-accentPlay', 'font-semibold');
+                navPlayLabel.classList.add('text-zinc-500');
+
+                // Ambient Glow & Accent color changes in Hero
+                heroGreeting.innerHTML = '반갑습니다, 차분하게 생각하고 기록하는';
+                heroGlow.classList.remove('bg-accentPlay/15');
+                heroGlow.classList.add('bg-accentWorkDark/20');
+                catchphraseBorder.classList.remove('bg-accentPlay');
+                catchphraseBorder.classList.add('bg-accentWorkDark');
+                catchSwitchText.classList.remove('text-accentPlay', 'shadow-sm');
+                catchSwitchText.classList.add('text-zinc-400');
+                toggleInstruction.textContent = "스위치 혹은 키보드 S 키를 눌러 면모를 반전해 보세요.";
+
+                // Brand Strength Cards cleanup (Work mode Royal Blue shadow/accent)
+                strengthCard1.classList.remove('shadow-glow-play', 'border-zinc-800/80');
+                strengthCard2.classList.remove('shadow-glow-play', 'border-zinc-800/80');
+                strengthCard3.classList.remove('shadow-glow-play', 'border-zinc-800/80');
+
+                // Strength Card 1 Reset (Work Mode Accent)
+                strengthCard1.querySelector('.icon-box').classList.add('bg-zinc-800', 'text-zinc-400');
+                strengthCard1.querySelector('.icon-box').classList.remove('bg-rose-950/40', 'text-accentPlay');
+                strengthCard1.querySelector('.strength-title').classList.remove('text-white');
+                strengthCard1.querySelector('.strength-badge').classList.remove('text-accentPlay');
+
+                // Strength Card 2 Reset
+                strengthCard2.querySelector('.icon-box').classList.add('bg-zinc-800', 'text-zinc-400');
+                strengthCard2.querySelector('.icon-box').classList.remove('bg-rose-950/40', 'text-accentPlay');
+                strengthCard2.querySelector('.strength-title').classList.remove('text-white');
+                strengthCard2.querySelector('.strength-badge').classList.remove('text-accentPlay');
+
+                // Strength Card 3 Reset
+                strengthCard3.querySelector('.icon-box').classList.add('bg-zinc-800', 'text-zinc-400');
+                strengthCard3.querySelector('.icon-box').classList.remove('bg-rose-950/40', 'text-accentPlay');
+                strengthCard3.querySelector('.strength-title').classList.remove('text-white');
+                strengthCard3.querySelector('.strength-badge').classList.remove('text-accentPlay');
+
+                // Music Player Widget Reset
+                vibeWidget.classList.remove('shadow-glow-play', 'border-accentPlay/20');
+                vibeTitle.textContent = "Coffee & Coding Beats";
+                vibeSub.textContent = "Quiet Lo-fi Session (65 BPM)";
+                playerProgress.style.width = "35%";
+                playerProgress.classList.remove('bg-accentPlay');
+                playerProgress.classList.add('bg-accentWork');
+                albumCover.classList.remove('border-accentPlay/40');
+                eqBars.forEach(bar => {
+                    bar.classList.add('bg-zinc-700');
+                    bar.classList.remove('bg-accentPlay');
+                    bar.style.animationPlayState = 'paused';
+                });
+
+                // Spec Meter Widget Reset
+                specsWidget.classList.remove('border-accentPlay/10');
+                specLabel1.textContent = "Logic Accuracy (논리 설계력)";
+                specVal1.textContent = "95%";
+                specVal1.classList.add('text-accentWork');
+                specVal1.classList.remove('text-accentPlay');
+                specBar1.style.width = "95%";
+                specBar1.classList.add('bg-accentWork');
+                specBar1.classList.remove('bg-accentPlay');
+
+                // Dynamic Specs Elements Resets
+                specLabel2.textContent = "Refactoring Focus (클린 코드 집착)";
+                specVal2.textContent = "90%";
+                specVal2.classList.add('text-accentWork');
+                specVal2.classList.remove('text-accentPlay');
+                specBar2.style.width = "90%";
+                specBar2.classList.add('bg-accentWork');
+                specBar2.classList.remove('bg-accentPlay');
+
+                specLabel3.textContent = "Coffee Synergy (몰입 지속도)";
+                specVal3.textContent = "85%";
+                specVal3.classList.add('text-accentWork');
+                specVal3.classList.remove('text-accentPlay');
+                specBar3.style.width = "85%";
+                specBar3.classList.add('bg-accentWork');
+                specBar3.classList.remove('bg-accentPlay');
+
+                // Dual Archives interactive changes reset
+                // Left Column (Work Space): Brightened & fully active with Royal Blue
+                worldWork.classList.remove('opacity-50');
+                workIndicatorDot.classList.add('bg-accentWork');
+                workIndicatorDot.classList.remove('bg-zinc-700');
+                workIndicatorText.textContent = "CALM READY";
+                workIndicatorText.classList.add('text-zinc-300');
+                workIndicatorText.classList.remove('text-zinc-600');
+                workPreTitle.classList.add('text-accentWork');
+                workPreTitle.classList.remove('text-zinc-500');
+                workHighlightBox.classList.remove('border-zinc-900');
+                workHighlightBox.classList.add('border-zinc-800/80');
+                techTags.forEach(tag => {
+                    tag.classList.remove('border-zinc-950');
+                    tag.classList.add('border-zinc-800');
+                });
+                workFootLabel.classList.remove('text-zinc-700');
+                workFootLabel.classList.add('text-zinc-500');
+                workFootDot.classList.add('bg-zinc-800');
+                workFootDot.classList.remove('bg-zinc-950');
+
+                // Right Column (Play Space): Dimmed down to quiet mode
+                worldPlay.classList.add('opacity-40', 'bg-zinc-900/10', 'border-zinc-900/60');
+                worldPlay.classList.remove('bg-zinc-900/50', 'border-accentPlay/30', 'shadow-glow-play');
+                
+                playIndicatorDot.classList.add('bg-zinc-700');
+                playIndicatorDot.classList.remove('bg-accentPlay', 'pulse-glow');
+                playIndicatorText.textContent = "STANDBY";
+                playIndicatorText.classList.add('text-zinc-500');
+                playIndicatorText.classList.remove('text-accentPlay');
+
+                playPreTitle.classList.add('text-zinc-500');
+                playPreTitle.classList.remove('text-accentPlay');
+                playMainTitle.classList.add('text-zinc-400');
+                playMainTitle.classList.remove('text-white');
+
+                // Play Item Cards Lightup Reset
+                playItemCards.forEach(card => {
+                    card.classList.add('bg-zinc-950/30', 'border-zinc-900');
+                    card.classList.remove('bg-zinc-950/80', 'border-zinc-800');
+                });
+                playItemTitles.forEach(title => {
+                    title.classList.add('text-zinc-400');
+                    title.classList.remove('text-rose-400');
+                });
+                playItemDescs.forEach(desc => {
+                    desc.classList.add('text-zinc-500');
+                    desc.classList.remove('text-zinc-300');
+                });
+
+                playQuoteBox.classList.add('border-zinc-900', 'bg-zinc-950/10', 'text-zinc-500');
+                playQuoteBox.classList.remove('border-rose-950', 'bg-rose-950/10', 'text-rose-400');
+
+                playFootLabel.textContent = "Play Room Off-line";
+                playFootLabel.classList.add('text-zinc-600');
+                playFootLabel.classList.remove('text-accentPlay');
+                playFootDot.classList.add('bg-zinc-900');
+                playFootDot.classList.remove('bg-accentPlay');
+
+                // Interactive Mini Indicator Dot in Logo Header Reset
+                document.querySelector('.logo-dot').classList.add('bg-zinc-600');
+                document.querySelector('.logo-dot').classList.remove('bg-accentPlay');
+
+                // SSAFY Badge Pulse Accent Change
+                ssafyPulseDot.classList.remove('bg-accentPlay');
+                ssafyPulseDot.classList.add('bg-accentWork');
+            }
+        }
+
+        // Attach Click Event Listeners to both master switches
+        masterSwitch.addEventListener('click', toggleState);
+        globalToggle.addEventListener('click', toggleState);
+
+        // Header transparency adjustment on scroll
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 50) {
+                header.classList.add('bg-darkBg/90', 'border-zinc-800/50');
+                header.classList.remove('bg-darkBg/60', 'border-zinc-900');
+            } else {
+                header.classList.add('bg-darkBg/60', 'border-zinc-900');
+                header.classList.remove('bg-darkBg/90', 'border-zinc-800/50');
+            }
+        });
+
+        // Setup Initial state on load
+        window.onload = function () {
+            // Initiate styling state and cursor spotlight parameters safely
+            spotlight.style.setProperty('--mouse-x', '50%');
+            spotlight.style.setProperty('--mouse-y', '50%');
+            updateUI();
+        }
+    </script>
+</body>
+</html>

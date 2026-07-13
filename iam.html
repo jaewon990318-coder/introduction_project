@@ -24,14 +24,14 @@
                         customCardBorder: 'var(--card-border)',
                         customTextMuted: 'var(--text-muted)',
                         
-                        // Premium Royal Blue for Work
-                        accentWork: '#3b52ee', 
-                        accentWorkDark: '#111E6C', 
+                        // Premium Midnight Blue for Work
+                        accentWork: 'var(--accent-color)', 
+                        accentWorkDark: '#191970', 
                         // Premium Ruby Red for Play
                         accentPlay: '#900603', 
                     },
                     boxShadow: {
-                        'glow-work': '0 0 35px rgba(59, 82, 238, 0.15)', 
+                        'glow-work': '0 0 35px rgba(25, 25, 112, 0.25)', 
                         'glow-play': '0 0 35px rgba(144, 6, 3, 0.25)',
                     }
                 }
@@ -53,6 +53,10 @@
             --icon-bg: #27272a;
             --icon-text: #a1a1aa;
             --badge-text: #71717a;
+            
+            /* Midnight Blue adaptive accent for Dark Mode contrast */
+            --accent-color: #5d75f8;   
+            --scroll-glow: rgba(93, 117, 248, 0.5);
         }
 
         body.switch-on {
@@ -60,6 +64,8 @@
             --icon-bg: rgba(144, 6, 3, 0.15);
             --icon-text: #900603;
             --badge-text: #900603;
+            --accent-color: #900603;
+            --scroll-glow: rgba(144, 6, 3, 0.5);
         }
 
         body.light-mode {
@@ -72,8 +78,12 @@
             --header-bg: rgba(244, 244, 245, 0.6);
             --header-border: rgba(228, 228, 231, 0.6);
             --icon-bg: #e4e4e7;
-            --icon-text: #71717a;
-            --badge-text: #71717a;
+            --icon-text: #191970;
+            --badge-text: #191970;
+            
+            /* True Midnight Blue #191970 for perfect light mode contrast */
+            --accent-color: #191970;   
+            --scroll-glow: rgba(25, 25, 112, 0.3);
         }
 
         body.light-mode.switch-on {
@@ -81,6 +91,8 @@
             --icon-bg: rgba(144, 6, 3, 0.1);
             --icon-text: #900603;
             --badge-text: #900603;
+            --accent-color: #900603;
+            --scroll-glow: rgba(144, 6, 3, 0.3);
         }
 
         body {
@@ -114,7 +126,7 @@
             z-index: 10;
             background: radial-gradient(
                 600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                rgba(59, 82, 238, 0.08), 
+                rgba(25, 25, 112, 0.08), 
                 transparent 80%
             );
             transition: background 0.4s ease;
@@ -125,7 +137,7 @@
             background: radial-gradient(
                 700px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
                 rgba(144, 6, 3, 0.09), 
-                rgba(17, 30, 108, 0.01) 40%,
+                rgba(25, 25, 112, 0.01) 40%,
                 transparent 80%
             );
         }
@@ -134,7 +146,7 @@
         .light-mode .spotlight {
             background: radial-gradient(
                 600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
-                rgba(59, 82, 238, 0.04), 
+                rgba(25, 25, 112, 0.04), 
                 transparent 80%
             );
         }
@@ -152,10 +164,10 @@
             filter: blur(80px);
         }
         body.light-mode #hero-glow {
-            background-color: rgba(59, 82, 238, 0.04) !important; /* Extremely subtle clear royal blue instead of navy blob */
+            background-color: rgba(25, 25, 112, 0.04) !important; /* Extremely subtle clear midnight blue */
         }
         body.light-mode.switch-on #hero-glow {
-            background-color: rgba(144, 6, 3, 0.03) !important; /* Extremely subtle clear ruby red instead of navy blob */
+            background-color: rgba(144, 6, 3, 0.03) !important; /* Extremely subtle clear ruby red */
         }
 
         /* Smooth state transitions */
@@ -186,9 +198,21 @@
         .eq-bar:nth-child(3) { animation-delay: 0.35s; }
         .eq-bar:nth-child(4) { animation-delay: 0.05s; }
         .eq-bar:nth-child(5) { animation-delay: 0.25s; }
+
+        /* Dynamic Scroll Progress Bar Style */
+        #scroll-progress-bar {
+            background-color: var(--accent-color);
+            box-shadow: 0 0 10px var(--scroll-glow);
+            transition: width 0.08s ease-out, background-color 0.5s ease, box-shadow 0.5s ease;
+        }
     </style>
 </head>
 <body class="selection:bg-zinc-800 selection:text-white transition-colors duration-500">
+
+    <!-- Fixed Scroll Progress Bar -->
+    <div id="scroll-progress" class="fixed top-0 left-0 w-full h-[3px] z-50 pointer-events-none">
+        <div id="scroll-progress-bar" class="h-full w-0"></div>
+    </div>
 
     <!-- Interactive Spotlight Overlay -->
     <div class="spotlight" id="spotlight"></div>
@@ -198,13 +222,13 @@
         <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
             <!-- Logo / Signature -->
             <a href="#" class="flex items-center space-x-2 group">
-                <div class="w-3 h-3 rounded-full bg-zinc-600 group-hover:bg-accentWork transition-colors duration-300 logo-dot"></div>
+                <div class="w-3 h-3 rounded-full bg-zinc-600 group-hover:bg-customBg transition-colors duration-300 logo-dot" style="background-color: var(--accent-color);"></div>
                 <span class="font-semibold tracking-tight transition-colors" style="color: var(--text-color);">JAEWON CHUNG</span>
             </a>
 
             <!-- Mode Quick Indicators for Desktop -->
             <div class="hidden md:flex items-center space-x-6 text-xs tracking-widest text-zinc-400">
-                <span id="nav-work-label" class="transition-colors duration-300 text-accentWork font-semibold">WORK : CALM DEVELOPER</span>
+                <span id="nav-work-label" class="transition-colors duration-300 font-semibold" style="color: var(--accent-color);">WORK : CALM DEVELOPER</span>
                 <span class="text-zinc-700">|</span>
                 <span id="nav-play-label" class="transition-colors duration-300">PLAY : PASSIONATE EXPLORER</span>
             </div>
@@ -239,12 +263,12 @@
     <section class="relative min-h-screen flex flex-col justify-center items-center px-6 pt-24 pb-16 overflow-hidden">
         <!-- Ambient background glows -->
         <div class="ambient-top-glow absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-zinc-900/10 dark:bg-zinc-900/40 blur-[100px] pointer-events-none z-0"></div>
-        <div id="hero-glow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accentWorkDark/20 blur-[140px] pointer-events-none z-0 transition-all duration-700"></div>
+        <div id="hero-glow" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none z-0 transition-all duration-700" style="background-color: rgba(25, 25, 112, 0.18);"></div>
 
         <div class="max-w-3xl w-full text-center z-10 space-y-8">
             <!-- SSAFY Tag -->
             <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full border text-xs" style="background-color: var(--card-bg); border-color: var(--card-border); color: var(--text-color);">
-                <span class="w-1.5 h-1.5 rounded-full bg-accentWork pulse-glow" id="ssafy-pulse-dot"></span>
+                <span class="w-1.5 h-1.5 rounded-full pulse-glow" id="ssafy-pulse-dot" style="background-color: var(--accent-color);"></span>
                 <span>SSAFY 16기</span>
             </div>
 
@@ -260,7 +284,7 @@
 
             <!-- Catchphrase block -->
             <div class="p-6 md:p-8 rounded-2xl backdrop-blur-sm max-w-2xl mx-auto relative overflow-hidden group border transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
-                <div class="absolute top-0 left-0 w-1 h-full bg-accentWorkDark transition-all duration-500" id="catchphrase-border"></div>
+                <div class="absolute top-0 left-0 w-1 h-full transition-all duration-500" id="catchphrase-border" style="background-color: var(--accent-color);"></div>
                 <p class="md:text-lg leading-relaxed text-left font-light pl-2" style="color: var(--text-color);">
                     "좋아하는 것 앞에서 <span id="catch-switch-text" class="text-zinc-400 font-semibold transition-all duration-300">스위치</span>가 켜지는,<br class="hidden sm:inline">
                     거창한 포장 없이 나만의 즐거움을 수집하는 기록 보관소."
@@ -270,7 +294,7 @@
             <!-- Interactive Core Switch Module -->
             <div class="pt-6 pb-2 space-y-4 max-w-sm mx-auto">
                 <div class="flex items-center justify-center space-x-6 border p-4 rounded-2xl shadow-xl transition-all duration-500" style="background-color: var(--card-bg); border-color: var(--card-border);">
-                    <span id="switch-off-label" class="text-sm font-semibold transition-all duration-300 text-accentWork scale-105">
+                    <span id="switch-off-label" class="text-sm font-semibold transition-all duration-300 scale-105" style="color: var(--accent-color);">
                         OFF <span class="text-xs block font-light text-zinc-500">Calm Dev</span>
                     </span>
                     
@@ -308,7 +332,7 @@
             <!-- Strength 1 -->
             <div id="strength-card-1" class="mode-transition p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="space-y-4">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--icon-text);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--accent-color);">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                     </div>
                     <h3 class="text-lg font-bold transition-colors duration-300 strength-title" style="color: var(--text-color);">신중하게 쌓는 아키텍처</h3>
@@ -316,13 +340,13 @@
                         성급하게 타이핑을 시작하기 전에 문제의 범주를 명확히 정의합니다. 논리적 인과관계를 차분히 뜯어보며, 장기적으로 안정된 코드 구조를 구축하는 것에 우선순위를 둡니다.
                     </p>
                 </div>
-                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--badge-text);">#Calm_Logic</div>
+                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--accent-color);">#Calm_Logic</div>
             </div>
 
             <!-- Strength 2 -->
             <div id="strength-card-2" class="mode-transition p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="space-y-4">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--icon-text);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--accent-color);">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
                     <h3 class="text-lg font-bold transition-colors duration-300 strength-title" style="color: var(--text-color);">안정적인 학습 템포</h3>
@@ -330,13 +354,13 @@
                         단기적인 성과에 쉽게 일희일비하지 않고, 매일 조금씩 지식을 쌓아 올려 견고한 결과물을 만들어 냅니다. 꾸준함이 지닌 힘을 믿으며 일정한 속도로 흔들림 없이 전진합니다.
                     </p>
                 </div>
-                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--badge-text);">#Daily_Stable</div>
+                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--accent-color);">#Daily_Stable</div>
             </div>
 
             <!-- Strength 3 -->
             <div id="strength-card-3" class="mode-transition p-8 rounded-2xl border flex flex-col justify-between space-y-6 transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <div class="space-y-4">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--icon-text);">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-500 icon-box" style="background-color: var(--icon-bg); color: var(--accent-color);">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                     </div>
                     <h3 class="text-lg font-bold transition-colors duration-300 strength-title" style="color: var(--text-color);">정제되고 투명한 기록</h3>
@@ -344,7 +368,7 @@
                         가공되거나 부풀려진 요약 정보보다는, 설계 당시 고민했던 트레이드오프나 해결 과정의 시행착오를 담백하고 솔직하게 글로 남겨 동료들에게 무해한 통찰력을 제공합니다.
                     </p>
                 </div>
-                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--badge-text);">#Pure_Archive</div>
+                <div class="text-xs font-mono transition-colors duration-300 strength-badge" style="color: var(--accent-color);">#Pure_Archive</div>
             </div>
         </div>
     </section>
@@ -382,7 +406,7 @@
 
                 <div class="space-y-1.5">
                     <div class="h-1 rounded-full overflow-hidden" style="background-color: var(--card-border);">
-                        <div id="player-progress" class="h-full bg-accentWork transition-all duration-700" style="width: 35%;"></div>
+                        <div id="player-progress" class="h-full transition-all duration-700" style="width: 35%; background-color: var(--accent-color);"></div>
                     </div>
                     <div class="flex justify-between text-[9px] font-mono text-zinc-600">
                         <span>02:14</span>
@@ -400,30 +424,30 @@
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-mono">
                             <span id="spec-label-1" class="transition-colors duration-300" style="color: var(--text-color);">Logic Accuracy (논리 설계력)</span>
-                            <span id="spec-val-1" class="text-accentWork font-semibold transition-colors duration-300">95%</span>
+                            <span id="spec-val-1" class="font-semibold transition-colors duration-300" style="color: var(--accent-color);">95%</span>
                         </div>
                         <div class="h-1.5 rounded-full overflow-hidden" style="background-color: var(--card-border);">
-                            <div id="spec-bar-1" class="h-full bg-accentWork transition-all duration-700" style="width: 95%;"></div>
+                            <div id="spec-bar-1" class="h-full transition-all duration-700" style="width: 95%; background-color: var(--accent-color);"></div>
                         </div>
                     </div>
                     <!-- Stat 2 -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-mono">
                             <span id="spec-label-2" class="transition-colors duration-300" style="color: var(--text-color);">Refactoring Focus (클린 코드 집착)</span>
-                            <span id="spec-val-2" class="text-accentWork font-semibold transition-colors duration-300">90%</span>
+                            <span id="spec-val-2" class="font-semibold transition-colors duration-300" style="color: var(--accent-color);">90%</span>
                         </div>
                         <div class="h-1.5 rounded-full overflow-hidden" style="background-color: var(--card-border);">
-                            <div id="spec-bar-2" class="h-full bg-accentWork transition-all duration-700" style="width: 90%;"></div>
+                            <div id="spec-bar-2" class="h-full transition-all duration-700" style="width: 90%; background-color: var(--accent-color);"></div>
                         </div>
                     </div>
                     <!-- Stat 3 -->
                     <div class="space-y-1">
                         <div class="flex justify-between text-xs font-mono">
                             <span id="spec-label-3" class="transition-colors duration-300" style="color: var(--text-color);">Coffee Synergy (몰입 지속도)</span>
-                            <span id="spec-val-3" class="text-accentWork font-semibold transition-colors duration-300">85%</span>
+                            <span id="spec-val-3" class="font-semibold transition-colors duration-300" style="color: var(--accent-color);">85%</span>
                         </div>
                         <div class="h-1.5 rounded-full overflow-hidden" style="background-color: var(--card-border);">
-                            <div id="spec-bar-3" class="h-full bg-accentWork transition-all duration-700" style="width: 85%;"></div>
+                            <div id="spec-bar-3" class="h-full transition-all duration-700" style="width: 85%; background-color: var(--accent-color);"></div>
                         </div>
                     </div>
                 </div>
@@ -446,14 +470,14 @@
             <div id="world-work" class="mode-transition relative p-8 rounded-3xl border-2 hover:border-zinc-700 flex flex-col justify-between overflow-hidden transition-all duration-500" style="background-color: var(--card-bg-translucent); border-color: var(--card-border);">
                 <!-- Status Glow Indicator -->
                 <div class="absolute top-4 right-4 flex items-center space-x-2 px-3 py-1 rounded-full border border-zinc-800" style="background-color: rgba(9, 9, 11, 0.8);">
-                    <span id="work-indicator-dot" class="w-2 h-2 rounded-full bg-accentWork transition-colors duration-300"></span>
+                    <span id="work-indicator-dot" class="w-2 h-2 rounded-full transition-colors duration-300" style="background-color: var(--accent-color);"></span>
                     <span id="work-indicator-text" class="text-[10px] font-mono tracking-wider transition-colors duration-300" style="color: var(--text-color);">CALM READY</span>
                 </div>
 
                 <div class="space-y-8">
                     <!-- Title -->
                     <div>
-                        <span id="work-pre-title" class="text-xs font-mono text-accentWork tracking-widest block uppercase mb-1 transition-colors duration-300">01. Dev & Ssafy Life</span>
+                        <span id="work-pre-title" class="text-xs font-mono tracking-widest block uppercase mb-1 transition-colors duration-300" style="color: var(--accent-color);">01. Dev & Ssafy Life</span>
                         <h3 class="text-xl md:text-2xl font-bold" style="color: var(--text-color);">차분하게 설계하는 생각의 기록</h3>
                     </div>
 
@@ -777,7 +801,6 @@
                 vibeTitle.textContent = "Night Synthwave / Cyberpunk";
                 vibeSub.textContent = "Focus Passion Drive (120 BPM)";
                 playerProgress.style.width = "78%";
-                playerProgress.className = "h-full bg-accentPlay transition-all duration-700";
                 albumCover.classList.add('border-accentPlay/40');
                 eqBars.forEach(bar => {
                     bar.classList.remove('bg-zinc-700');
@@ -789,30 +812,22 @@
                 specsWidget.classList.add('border-accentPlay/10');
                 specLabel1.textContent = "Baseline Rally (코트 랠리 집중력)";
                 specVal1.textContent = "92%";
-                specVal1.className = "text-accentPlay font-semibold transition-colors duration-300";
                 specBar1.style.width = "92%";
-                specBar1.className = "h-full bg-accentPlay transition-all duration-700";
 
                 specLabel2.textContent = "Acoustic Beat Sync (사운드 조율도)";
                 specVal2.textContent = "94%";
-                specVal2.className = "text-accentPlay font-semibold transition-colors duration-300";
                 specBar2.style.width = "94%";
-                specBar2.className = "h-full bg-accentPlay transition-all duration-700";
 
                 specLabel3.textContent = "Clutch Concentration (상황 몰입력)";
                 specVal3.textContent = "98%";
-                specVal3.className = "text-accentPlay font-semibold transition-colors duration-300";
                 specBar3.style.width = "98%";
-                specBar3.className = "h-full bg-accentPlay transition-all duration-700";
 
                 // Dual Archives Interactive Tuning
                 worldWork.classList.add('opacity-50');
-                workIndicatorDot.className = "w-2 h-2 rounded-full bg-zinc-700 transition-colors duration-300";
+                workIndicatorDot.style.backgroundColor = "var(--accent-color)";
                 workIndicatorText.textContent = "BACKGROUND STABLE";
                 workIndicatorText.classList.remove('text-zinc-300');
                 workIndicatorText.classList.add('text-zinc-600');
-                workPreTitle.classList.remove('text-accentWork');
-                workPreTitle.classList.add('text-zinc-500');
                 workHighlightBox.classList.add('border-zinc-900');
                 workHighlightBox.classList.remove('border-zinc-800/80');
                 techTags.forEach(tag => {
@@ -858,10 +873,6 @@
                 playFootLabel.classList.add('text-accentPlay');
                 playFootDot.className = "w-2 h-2 rounded-full bg-accentPlay transition-colors duration-300";
 
-                // Interactive Mini Indicator Dot in Logo Header
-                document.querySelector('.logo-dot').className = "w-3 h-3 rounded-full bg-accentPlay logo-dot transition-colors duration-300";
-                ssafyPulseDot.className = "w-1.5 h-1.5 rounded-full bg-accentPlay pulse-glow";
-
             } else {
                 // Apply "OFF" Calm Mode (Work Mode)
                 body.classList.remove('switch-on');
@@ -874,17 +885,21 @@
                 globalToggle.ariaChecked = "false";
 
                 // Text labels on Hero Toggle Switch
-                switchOffLabel.className = "text-sm font-semibold transition-all duration-300 text-accentWork scale-105";
+                switchOffLabel.className = "text-sm font-semibold transition-all duration-300 scale-105";
+                switchOffLabel.style.color = "var(--accent-color)";
                 switchOnLabel.className = "text-sm font-semibold transition-all duration-300 text-zinc-600";
 
                 // Quick Header Nav Labels
-                navWorkLabel.className = "transition-colors duration-300 text-accentWork font-semibold";
+                navWorkLabel.className = "transition-colors duration-300 font-semibold";
+                navWorkLabel.style.color = "var(--accent-color)";
                 navPlayLabel.className = "transition-colors duration-300 text-zinc-500";
 
                 // Ambient Glow & Accent color changes in Hero
                 heroGreeting.innerHTML = '반갑습니다, 차분하게 생각하고 기록하는';
-                heroGlow.className = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-accentWorkDark/20 blur-[140px] pointer-events-none z-0 transition-all duration-700";
-                catchphraseBorder.className = "absolute top-0 left-0 w-1 h-full bg-accentWorkDark transition-all duration-500";
+                heroGlow.className = "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[140px] pointer-events-none z-0 transition-all duration-700";
+                heroGlow.style.backgroundColor = "rgba(25, 25, 112, 0.18)";
+                catchphraseBorder.className = "absolute top-0 left-0 w-1 h-full transition-all duration-500";
+                catchphraseBorder.style.backgroundColor = "var(--accent-color)";
                 catchSwitchText.className = "text-zinc-400 font-semibold transition-all duration-300";
                 toggleInstruction.textContent = "스위치 혹은 키보드 S 키를 눌러 면모를 반전해 보세요.";
 
@@ -911,7 +926,6 @@
                 vibeTitle.textContent = "Coffee & Coding Beats";
                 vibeSub.textContent = "Quiet Lo-fi Session (65 BPM)";
                 playerProgress.style.width = "35%";
-                playerProgress.className = "h-full bg-accentWork transition-all duration-700";
                 albumCover.classList.remove('border-accentPlay/40');
                 eqBars.forEach(bar => {
                     bar.className = "eq-bar bg-zinc-700";
@@ -922,30 +936,22 @@
                 specsWidget.classList.remove('border-accentPlay/10');
                 specLabel1.textContent = "Logic Accuracy (논리 설계력)";
                 specVal1.textContent = "95%";
-                specVal1.className = "text-accentWork font-semibold transition-colors duration-300";
                 specBar1.style.width = "95%";
-                specBar1.className = "h-full bg-accentWork transition-all duration-700";
 
                 specLabel2.textContent = "Refactoring Focus (클린 코드 집착)";
                 specVal2.textContent = "90%";
-                specVal2.className = "text-accentWork font-semibold transition-colors duration-300";
                 specBar2.style.width = "90%";
-                specBar2.className = "h-full bg-accentWork transition-all duration-700";
 
                 specLabel3.textContent = "Coffee Synergy (몰입 지속도)";
                 specVal3.textContent = "85%";
-                specVal3.className = "text-accentWork font-semibold transition-colors duration-300";
                 specBar3.style.width = "85%";
-                specBar3.className = "h-full bg-accentWork transition-all duration-700";
 
                 // Dual Archives interactive changes reset
                 worldWork.classList.remove('opacity-50');
-                workIndicatorDot.className = "w-2 h-2 rounded-full bg-accentWork transition-colors duration-300";
+                workIndicatorDot.style.backgroundColor = "var(--accent-color)";
                 workIndicatorText.textContent = "CALM READY";
                 workIndicatorText.classList.add('text-zinc-300');
                 workIndicatorText.classList.remove('text-zinc-600');
-                workPreTitle.classList.add('text-accentWork');
-                workPreTitle.classList.remove('text-zinc-500');
                 workHighlightBox.classList.remove('border-zinc-900');
                 workHighlightBox.classList.add('border-zinc-800/80');
                 techTags.forEach(tag => {
@@ -990,10 +996,6 @@
                 playFootLabel.classList.add('text-zinc-600');
                 playFootLabel.classList.remove('text-accentPlay');
                 playFootDot.className = "w-2 h-2 rounded-full bg-zinc-900 transition-colors duration-300";
-
-                // Interactive Mini Indicator Dot in Logo Header Reset
-                document.querySelector('.logo-dot').className = "w-3 h-3 rounded-full bg-zinc-600 logo-dot transition-colors duration-300";
-                ssafyPulseDot.className = "w-1.5 h-1.5 rounded-full bg-accentWork pulse-glow";
             }
         }
 
@@ -1002,7 +1004,7 @@
         globalToggle.addEventListener('click', toggleState);
         themeToggleBtn.addEventListener('click', toggleTheme);
 
-        // Header transparency adjustment on scroll
+        // Header transparency adjustment on scroll + Scroll progress indicator calculation
         window.addEventListener('scroll', () => {
             const header = document.querySelector('header');
             if (window.scrollY > 50) {
@@ -1010,6 +1012,12 @@
             } else {
                 header.classList.remove('shadow-md');
             }
+
+            // Calculate Scroll Progress
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+            document.getElementById('scroll-progress-bar').style.width = scrolled + '%';
         });
 
         // Setup Initial state on load
